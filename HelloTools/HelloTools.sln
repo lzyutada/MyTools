@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloTools", "HelloTools\HelloTools.csproj", "{D4CBCCB9-864D-4E6B-A005-661A29EB1E4B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WMS", "WMS", "{A0A6C438-48E6-4362-A5DB-37509B91CBD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C_WMS.Data", "WMS\C_WMS.Data\C_WMS.Data.csproj", "{9300D045-8AFA-4564-9FC3-C0FDC3FB0AD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C_WMS.Interface", "WMS\C_WMS.Interface\C_WMS.Interface.csproj", "{A45F0BD2-A449-479C-90D5-C9F88BB0ECFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +21,20 @@ Global
 		{D4CBCCB9-864D-4E6B-A005-661A29EB1E4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4CBCCB9-864D-4E6B-A005-661A29EB1E4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4CBCCB9-864D-4E6B-A005-661A29EB1E4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9300D045-8AFA-4564-9FC3-C0FDC3FB0AD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9300D045-8AFA-4564-9FC3-C0FDC3FB0AD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9300D045-8AFA-4564-9FC3-C0FDC3FB0AD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9300D045-8AFA-4564-9FC3-C0FDC3FB0AD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A45F0BD2-A449-479C-90D5-C9F88BB0ECFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A45F0BD2-A449-479C-90D5-C9F88BB0ECFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A45F0BD2-A449-479C-90D5-C9F88BB0ECFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A45F0BD2-A449-479C-90D5-C9F88BB0ECFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9300D045-8AFA-4564-9FC3-C0FDC3FB0AD8} = {A0A6C438-48E6-4362-A5DB-37509B91CBD0}
+		{A45F0BD2-A449-479C-90D5-C9F88BB0ECFE} = {A0A6C438-48E6-4362-A5DB-37509B91CBD0}
 	EndGlobalSection
 EndGlobal
