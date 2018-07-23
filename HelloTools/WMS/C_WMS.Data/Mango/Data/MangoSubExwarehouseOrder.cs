@@ -181,13 +181,13 @@ namespace C_WMS.Data.Mango.Data
                         return;
                     }
                     MallOrderId = subMallOrder.DingDanID.ToString(); // ID of main-mallorder
-                    MallOrderType = MangoFactory.ConvertToMangoType(subMallOrder.DingDanType.Int()); // (TMangoOrderType)subMallOrder.DingDanType.Int();
+                    MallOrderType = MangoFactory.To_TMangoOrderType(subMallOrder.DingDanType.Int()); // (TMangoOrderType)subMallOrder.DingDanType.Int();
                     ScheduleDate = subMallOrder.PeiSongTime.ToString();
                     PlanQuantity = subMallOrder.ProductCount.Decimal();
                 }
                 else
                 {
-                    C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.{1}({2}), failed in retrieving sub-deliveryorder by FILTER:{3}", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, pOrderId, MisModelFactory.GetDebugInfo_MisFilter(filters));
+                    C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.{1}({2}), failed in retrieving sub-deliveryorder by FILTER:{3}", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, pOrderId, Utility.CWmsDataUtility.GetDebugInfo_MisFilter(filters));
                     Reset();
                 }
             }

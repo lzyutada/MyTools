@@ -25,6 +25,10 @@ namespace C_WMS.Data.Mango.MisModelPWI
         public const string cStrSignMethod = "sign_method";
         public const string cStrCustomerId = "customerid";
         public const string cStrLogisticsId = "logistics";
+        #region name of API methods
+        public const string cStrApiMethod_ItemsSync = "ApiMethod_ItemsSync";
+        public const string cStrApiMethod_InventoryMonitoring = "ApiMethod_InventoryMonitoring";
+        #endregion
         public const int cIntIsDefault = 0;
     }
 
@@ -39,6 +43,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
         static public CWmsMisSystemParamCache Cache { get { return (null == _cache) ? _cache = new CWmsMisSystemParamCache() : _cache; } }
         static CWmsMisSystemParamCache _cache = null;
 
+        #region Properties of params
         public pub_SystemParam EnableCWms { get; private set; }
         public pub_SystemParam CWMSOfflineHostUri { get; private set; }
         public pub_SystemParam CWMSHostUri { get; private set; }
@@ -47,10 +52,14 @@ namespace C_WMS.Data.Mango.MisModelPWI
         public pub_SystemParam AppKey { get; private set; }
         public pub_SystemParam Version { get; private set; }
         public pub_SystemParam SignMethod { get; private set; }
+        public pub_SystemParam ApiMethod_ItemsSync { get; private set; }
+        public pub_SystemParam ApiMethod_InventoryMonitoring { get; private set; }
+        public pub_SystemParam ApiMethod_ItemSync { get; private set; }
         protected pub_SystemParam SysParamCustomerId { get; private set; }
         protected pub_SystemParam SysParamLogistics { get; private set; }
         public CWmsSystemParam_Customer CustomerId { get; private set; }
         public CWmsSystemParam_Logistics Logistics { get; private set; }
+        #endregion
 
         /// <summary>
         /// default constructor
@@ -107,6 +116,11 @@ namespace C_WMS.Data.Mango.MisModelPWI
                     , CustomerId, Logistics);
                 #endregion
             }
+        }
+
+        public IEnumerable<CWmsSystemParam_CustomerOwner> GetV_Owners()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -204,6 +218,15 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 C_WMS.Data.Utility.MyLog.Instance.Warning(ex, "Exception in CWmsMisSystemParamCache.GetDefaultLogistics, return null.");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 获取全部仓库
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<CWmsSystemParam_CustomerOwnerWarehouses> GetV_Warehouses()
+        {
+            throw new NotImplementedException("");
         }
     }
 

@@ -6,6 +6,7 @@ using System.Reflection;
 using C_WMS.Data.Mango.Data;
 using C_WMS.Data.Wms.Data;
 using MisModel;
+using C_WMS.Interface.CWms.CWmsEntity;
 
 namespace C_WMS.Data.CWms.CWmsEntity
 {
@@ -13,25 +14,9 @@ namespace C_WMS.Data.CWms.CWmsEntity
     /// entity of product
     /// </summary>
     /// <seealso cref="CWmsEntityBase" />
-    class CWmsProduct : Interface.CWms.CWmsEntity.CWmsEntityBase
+    class CWmsProduct : CWmsEntityBase
     {
         #region Members
-#if false
-        /// <summary>
-        /// 有效期(天)
-        /// </summary>
-        public int ExpirationDay = 0;
-
-        /// <summary>
-        /// 有效期(小时)
-        /// </summary>
-        public int ExpirationHour = 0;
-        
-        private MangoProduct mMangoProduct = null;
-        
-        private WmsProduct mWmsProduct = null;
-#endif
-
         /// <summary>
         /// 要传给wms的ItemCode
         /// </summary>
@@ -45,10 +30,6 @@ namespace C_WMS.Data.CWms.CWmsEntity
             {
                 mItemCode = value;  // set itemCode
                 MangoProduct.SetId(CWmsProductHandler.GetItemIdFromCode(value));
-                //// set ProductId
-                //var idList = value.Split('-');
-                //if (0 < idList.Length) MangoProduct.SetId(idList[0]);
-                //else MangoProduct.SetId(string.Empty);
             }
         }
         private string mItemCode = string.Empty;
@@ -62,15 +43,18 @@ namespace C_WMS.Data.CWms.CWmsEntity
         /// </summary>
         public WmsProduct WmsProduct { get; protected set; }
         #endregion
-
-        #region Methods
-
+        
         /// <summary>
         /// default constructor
         /// </summary>
         public CWmsProduct() {
             MangoProduct = new MangoProduct();
             WmsProduct = new WmsProduct();
+        }
+
+        public override void Dispose()
+        {
+            // do nothing
         }
 
         /// <summary>
@@ -116,7 +100,6 @@ namespace C_WMS.Data.CWms.CWmsEntity
                 //MangoProduct.GGDict.GetSpecification();
             }
         }
-        #endregion
     }
 
     /// <summary>

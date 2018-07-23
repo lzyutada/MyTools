@@ -25,25 +25,9 @@ namespace C_WMS.Data.CWms.CWmsEntity
         {
             get
             {
-#if false
-                var mangoOrder = MangoOrder as Mango.Data.MangoExwarehouseOrder;
-                if (null == mangoOrder)
-                {
-                    C_WMS.Data.Utility.MyLog.Instance.Warning("获取主出库单Id失败, MangoOrder={0}", MangoOrder);
-                    return string.Empty;
-                }
-                else
-#endif
                 return MangoOrder.ProductOutputMainId.Int().ToString();
             }
         }
-
-#if false
-        /// <summary>
-        /// 
-        /// </summary>
-        public DateTime lastModifiedTime = DateTime.MinValue;
-#endif
 
         /// <summary>
         /// 获取C-WMS系统对应的出库单类型
@@ -190,102 +174,6 @@ namespace C_WMS.Data.CWms.CWmsEntity
         {
             return Dict709Handle.UpdateRowA_Order(TDict709_Value.EExwarehouseOrder, pEid, pEid, pUpdateOk, pDel, out pMsg);
         }
-        //protected override List<Product_WMS_Interface> GetPwiListFromOrder(object pOrder)
-        //{
-        //    return MangoFactory.GetPwiListFromSubStockoutOrders(pOrder as CWmsExWarehouseOrder);
-        //}
-
-#if false
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pOperation"></param>
-        /// <param name="pEntity"></param>
-        /// <returns></returns>
-        protected override int DlgtFunc_RunWCF<TEntity>(TWCFOperation pOperation, params object[] args)
-        {
-            int err = 0;
-            string msg = "";
-            Dict709Handle.UpdateRowA(pEntity as Product_WMS_Interface, out err, out msg);
-            return err;
-        }
-        protected override void Acb_RunWCF(IAsyncResult iar)
-        {
-            object[] args = iar.AsyncState as object[];
-            int currentIndex = args[0].Int();
-            bool addOnNotFound = bool.Parse(args[1].ToString());
-            DefDlgt_RunWCF<Product_WMS_Interface> dlgt = args[2] as DefDlgt_RunWCF<Product_WMS_Interface>;
-            List<Product_WMS_Interface> pwiList = args[3] as List<Product_WMS_Interface>;
-
-            if (pwiList.Count > currentIndex)
-            {
-                AreArray[currentIndex].Set();
-                currentIndex++;
-                if (pwiList.Count > currentIndex)
-                {
-                    var acb_args = new object[] {
-                        currentIndex,
-                        addOnNotFound,
-                        new DefDlgt_RunWCF<Product_WMS_Interface>(DlgtFunc_RunWCF<Product_WMS_Interface>),
-                        pwiList.ToList(),
-                        args[4],
-                        args[5],
-                        args[6]
-                    };
-                    dlgt.BeginInvoke((addOnNotFound) ? TWCFOperation.EUpdateA : TWCFOperation.EUpdate, acb_args, Acb_RunWCF, acb_args);
-                }
-            }
-
-            dlgt.EndInvoke(iar);
-        }
-#endif
-#if true
-
-        /// <summary>
-        /// 更新单据pMangoOrder在Dict709中对应的行的isUpdateOk和isDel. 当pAddOnNotFound为true时，如果Dict709中没有对应的行则插入新行；当pAddOnNotFound为false时，如果Dict709中没有对应的行则操作失败.
-        /// 该方法返回WCF的执行结果或TError值
-        /// </summary>
-        /// <param name="pOrder">待更新的Mis实体对应的单据对象</param>
-        /// <param name="pIsUpdateOk">Dict709.IsUpdateOK字段</param>
-        /// <param name="pIsDel">Dict709.IsDel字段</param>
-        /// <param name="pAddOnNotFound">当pAddOnNotFound为true时，如果Dict709中没有对应的行则插入新行；当pAddOnNotFound为false时，如果Dict709中没有对应的行则操作失败.</param>
-
-        protected override List<Product_WMS_Interface> GetPwiListFromOrder(object pOrder)
-        {
-            return MangoFactory.GetPwiListFromSubEntryOrders(pOrder as CWmsEntryOrder);
-        }
-#else
-        public override int UpdateDict709(CWmsOrderBase<CWmsExWarehouseOrder, MangoExwarehouseOrder, WmsStockoutOrder, CWmsExWarehouseSubOrder, CWmsStockoutOrderHandler> pOrder, TDict285_Values pIsUpdateOk, TDict285_Values pIsDel, bool pAddOnNotFound)
-        {
-            if (null != AreArray) Array.Clear(AreArray, 0, AreArray.Length);
-            AreArray = pOrder.SubOrders.Select(x => new AutoResetEvent(false)).ToArray();
-
-            var args = new object[]
-            {
-                0,  // 0st
-                pAddOnNotFound, // 1st
-                new DefDlgt_RunWCF<Product_WMS_Interface>(DlgtFunc_RunWCF<Product_WMS_Interface>), // 2nd
-                MangoFactory.GetPwiListFromSubStockoutOrders(pOrder),  // 3rd
-                pOrder.Id,  // 4th
-                pIsUpdateOk,    // 5th
-                pIsDel  // 6th
-            };
-
-            var dlgt = args[2] as DefDlgt_RunWCF<Product_WMS_Interface>;
-            dlgt.BeginInvoke((pAddOnNotFound) ? TWCFOperation.EUpdateA : TWCFOperation.EUpdate, args, Acb_RunWCF, args);
-            WaitHandle.WaitAll(AreArray);
-            return -1;
-        }
-
-        //void Acb_UpdateDict709Item(IAsyncResult iar)
-        //{
-        //    TArgs_UpdateDict709 arg = iar.AsyncState as TArgs_UpdateDict709;
-        //    _ares[arg.CurrentAreIndex].Reset();
-        //    arg.CurrentAreIndex += 1;
-        //    var entity = Dict709Handle.NewPwiEntity(arg.MapClassId, arg.Order.Id, arg.Order.SubOrders.Values.ToList()[arg.CurrentAreIndex].Id, arg.IsUpdateOk, arg.IsDel);
-        //    arg.dlgt.BeginInvoke((arg.AddOnNotFound) ? Mango.TWCFOperation.EUpdateA : Mango.TWCFOperation.EUpdate, entity, Acb_UpdateDict709Item, arg);
-        //}
-#endif
 
         /// <summary>
         /// get entity of WmsLogistics as the logistics of this stockout order represented by _order.

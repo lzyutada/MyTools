@@ -12,6 +12,8 @@ using System.Linq;
 using MisModel;
 using MangoMis.Frame.DataSource.Simple;
 using C_WMS.Data.Mango.MisModelPWI;
+using System.Reflection;
+using C_WMS.Data.Wms.Data;
 
 namespace C_WMS.Data.CWms
 {
@@ -20,80 +22,154 @@ namespace C_WMS.Data.CWms
     /// </summary>
     class CWmsDataFactory
     {
-        #region 商城商品
+#if C_WMS_V2
+        static public int GetV_SpecificationLink(out Dictionary<string, string> pGgLinks)
+        {
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// 根据过滤器获取商品，并返回成功获取的商品数量。若操作失败则返回TError.WCFRunnError
+        /// static public int GetProductList(List[CommonFilterModel], ref List[CWmsProduct], out string pMsg)
         /// </summary>
         /// <param name="pList">返回成功获取的商品List，若操作失败则返回Count为0的列表实体</param>
         /// <param name="pFilters">过滤条件</param>
         /// <param name="pMsg">返回错我描述</param>
         /// <returns>返回成功获取的商品数量。若操作失败则返回TError.WCFRunnError</returns>
-        static public int GetProductList(List<CommonFilterModel> pFilters, ref List<CWmsProduct> pList, out string pMsg)
+        static public int GetV_Product(List<CommonFilterModel> pFilters, ref List<CWmsProduct> pList, out string pMsg)
         {
             int err = TError.WCF_RunError.Int();
-            List<MangoProduct> mangoList = null;
-            List<CWmsProduct> cwmsList = null;// new List<CWmsProduct>(10);
-
-            if (null == pList)
-                pList = new List<CWmsProduct>(10);
-            else
-                pList.Clear();
 
             try
             {
-                mangoList = MangoFactory.GetMangoMallProductList(pFilters, out pMsg);
-                if (null != mangoList && 0 < mangoList.Count)
+                if (null == pList) pList = new List<CWmsProduct>(10);
+                else pList.Clear();
+                List<MangoProduct> mangoList = null;
+                if (null != (mangoList = MangoFactory.GetV_Product(pFilters, out pMsg)) && 0 < mangoList.Count)
                 {
-                    cwmsList = mangoList.Select(x => new CWmsProduct(x)).ToList();
-                    //ret.Append("List<MangoProduct>转换成List<CWmsProduct>，数目为:{0}，目标List数量为:{1}", cwmsList.Count, pList.Count);
-                    pList.AddRange(cwmsList);
-                    //ret.Append("AddRange到目标List数目为:{0}", pList.Count);
+                    pList.AddRange(mangoList.Select(x => new CWmsProduct(x)).ToList());
                     err = pList.Count;
                 }
                 else
                 {
                     err = TError.Pro_HaveNoData.Int();
+                    pMsg = string.Format("CWmsDataFactory.GetV_Product(), 查询返回空(mangoList={0})或商品数量为0, err={1}, \r\nFilterDebug={2}", mangoList, err, Utility.CWmsDataUtility.GetDebugInfo_MisFilter(pFilters));
+                    C_WMS.Data.Utility.MyLog.Instance.Warning(pMsg);
                 }
             }
             catch (Exception ex)
             {
-                pList.Clear();
+                if (null != pList) pList.Clear();
                 pMsg = ex.Message;
                 err = TError.WCF_RunError.Int();
-                Data.Utility.MyLog.Instance.Error(ex, "在{0}中发生异常", System.Reflection.MethodBase.GetCurrentMethod().Name);
+                Data.Utility.MyLog.Instance.Warning(ex, "在{0}中发生异常", System.Reflection.MethodBase.GetCurrentMethod().Name);
             }
             return err;
         }
-        #endregion
 
-        #region 入库订单
         /// <summary>
-        /// 根据过滤器获取满足条件的全部入库订单。若执行成功则返回获取的行数，否则返回TError.WCF_RunError
+        /// 获取默认货主
+        /// </summary>
+        /// <returns></returns>
+        static public CWmsOwner GetDefaultOwner()
+        {
+            var cacheOwner = CWmsMisSystemParamCache.Cache.GetDefaultOwner();
+            if (null != cacheOwner)
+            {
+                CWmsOwner o = new CWmsOwner(cacheOwner.Code, cacheOwner.Name);
+                return o;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        static public CWmsOwner GetOwner(CWmsWarehouse warehouse)
+        {
+            var owner = CWmsMisSystemParamCache.Cache.GetV_Owners()?.First(cache => cache.Warehouses.Select(w => w.Code).Contains(warehouse.Mango.WarehouseId.Int().ToString()));
+            return new CWmsOwner(owner.Code, owner.Name);
+        }
+
+        static public IEnumerable<CWmsOwner> GetV_Owners()
+        {
+            return CWmsMisSystemParamCache.Cache.GetV_Owners()?.Select(cache => new CWmsOwner(cache.Code, cache.Name));
+        }
+
+        static public IEnumerable<CWmsWarehouse> GetV_Warehouse()
+        {
+            return CWmsMisSystemParamCache.Cache.GetV_Warehouses()?.Select(cache => new CWmsWarehouse(cache.Code, cache.Name) );
+        }
+
+        static public IEnumerable<CWmsWarehouse> GetV_Warehouse(string pOwnerCode)
+        {
+        }
+
+        static public IEnumerable<CWmsWarehouse> GetV_Warehouse(CWmsOwner pOwnerCode)
+        {
+        }
+
+        static public int GetV_Order<TOrderType, TMangoOrderType, THandler>(List<CommonFilterModel> pFilters, out IEnumerable<TOrderType> pOutList, out string pErrMsg) where TOrderType: class, new()
+        {
+            int err = TError.WCF_RunError.Int();
+            List<TMangoOrderType> orderList = null;
+
+            try
+            {
+                if (0 >= (err = MangoFactory.GetV_Order(pFilters, out orderList, out pErrMsg)) || null == orderList)
+                {
+                    pOutList = null;
+                    pErrMsg = string.Format("CWmsDataFactory.GetV_Order<{0}, {1}, {2}>列表失败, err={3}， orderList={4}, errMsg={5}", typeof(TOrderType), typeof(TMangoOrderType), typeof(THandler), err, orderList, pErrMsg);
+                    C_WMS.Data.Utility.MyLog.Instance.Warning(pErrMsg);
+                    return err;
+                }
+                else
+                {
+                    MethodInfo methodInfo = typeof(THandler).GetMethod("NewOrder", BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static);
+                    pOutList = orderList.Select(order => methodInfo.Invoke(null, new object[] { (order as IMangoOrderBase)?.GetId() }) as TOrderType);
+                    err = Enumerable.Count(pOutList);
+                    pErrMsg = (0 < err) ? string.Empty : string.Format("");
+                    return err;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (null != orderList) orderList.Clear();
+                pOutList = null;
+                pErrMsg = string.Format("CWmsDataFactory.GetV_Order<{0}, {1}, {2}>发生异常，FilterDebug={3}", typeof(TOrderType), typeof(TMangoOrderType), typeof(THandler), Utility.CWmsDataUtility.GetDebugInfo_MisFilter(pFilters));
+                Data.Utility.MyLog.Instance.Error(ex, pErrMsg);
+                return TError.Post_NoChange.Int();
+            }
+        }
+#endif
+
+#if false
+        /// <summary>
+        /// 根据过滤器获取满足条件的全部入库订单。若执行成功则返回获取的行数，否则返回小于或等于0
+        /// static public int GetVEntryOrders(List[CommonFilterModel], out List[CWmsEntryOrder], out string)
         /// </summary>
         /// <param name="pFilters">过滤器</param>
         /// <param name="pOutList">返回满足条件的全部入库订单，若执行失败则返回数量为0的列表实体</param>
         /// <param name="pErrMsg"></param>
         /// <returns></returns>
-        static public int GetVEntryOrders(List<CommonFilterModel> pFilters, out List<CWmsEntryOrder> pOutList, out string pErrMsg)
+        static public int GetV_EntryOrders(List<CommonFilterModel> pFilters, out IEnumerable<CWmsEntryOrder> pOutList, out string pErrMsg)
         {
             int err = TError.WCF_RunError.Int();
-            string errMsg = string.Empty;
-            pOutList = new List<CWmsEntryOrder>(1);
             List<MangoEntryOrder> orderList = null;
 
             try
             {
                 if (0 >= (err = MangoFactory.GetVMangoEntryOrders(pFilters, out orderList, out pErrMsg)) || null == orderList)
                 {
-                    pErrMsg = string.Format("根据过滤器获取满足条件的全部入库订单失败, err={0}， orderList={2}, errMsg={1}", err, pErrMsg, orderList);
-                    Data.Utility.MyLog.Instance.Error(pErrMsg);
+                    pOutList = null;
+                    pErrMsg = string.Format("根据过滤器获取入库订单失败, err={0}， orderList={2}, errMsg={1}", err, pErrMsg, orderList);
+                    C_WMS.Data.Utility.MyLog.Instance.Warning(pErrMsg);
                     return err;
                 }
                 else
                 {
                     foreach (MangoEntryOrder smo in orderList)
                     {
-                        #region 获取子入库单
+#region 获取子入库单
                         List<MangoSubEntryOrder> subList = null;
                         errMsg = MangoFactory.GetVMangoSubEntryOrders(smo?.ProductInputMainId.ToString(), out subList);
                         if (null == subList || 0 == subList.Count)
@@ -101,8 +177,8 @@ namespace C_WMS.Data.CWms
                             C_WMS.Data.Utility.MyLog.Instance.Error("在{0}中，获取主入库单({1})的子入库单失败, err={2}, errMsg={3}", System.Reflection.MethodBase.GetCurrentMethod().Name, smo?.ProductInputMainId, err, errMsg);
                             continue;
                         }
-                        #endregion
-                        #region 处理子入库单
+#endregion
+#region 处理子入库单
                         CWmsEntryOrder ceo = new CWmsEntryOrder();
                         foreach (var mso in subList)
                         {
@@ -116,7 +192,7 @@ namespace C_WMS.Data.CWms
                             (cso.MangoOrder as MangoSubEntryOrder).CopyFrom(mso);
                             ceo.SubOrders.Add(mso.ProductInputId.ToString(), cso);
                         }
-                        #endregion
+#endregion
 
                         if (0 < ceo.SubOrders.Count)
                         {
@@ -128,14 +204,15 @@ namespace C_WMS.Data.CWms
                             C_WMS.Data.Utility.MyLog.Instance.Error("在{0}中，主入库单({1})没有获取到任何子入库订单实体", System.Reflection.MethodBase.GetCurrentMethod().Name, smo?.ProductInputMainId);
                         }
                     } // foreach (MangoEntryOrder smo in orderList)
-                    pErrMsg = string.Empty;
+                    err = Enumerable.Count(pOutList);
+                    pErrMsg = (0 < err) ? string.Empty : string.Format("");
                     return err;
                 }
             }
             catch(Exception ex)
             {
+                pOutList = null;
                 pErrMsg = ex.Message;
-                pOutList.Clear();
                 Data.Utility.MyLog.Instance.Error(ex, "根据过滤条件获取主入库订单发生异常");
                 return TError.Post_NoChange.Int();
             }
@@ -172,7 +249,7 @@ namespace C_WMS.Data.CWms
                         CWmsSubEntryOder cso = new CWmsSubEntryOder();
                         (cso.MangoOrder as MangoSubEntryOrder).CopyFrom(s);
 
-                        #region // 获取应收数量
+#region // 获取应收数量
                         if (0 >= s.ProductBuyId.Int())
                         {
                             // 无采购入库Id，判断为芒果网络商品入库（补），实收数量即为应收数量
@@ -184,7 +261,7 @@ namespace C_WMS.Data.CWms
                             (cso.WmsOrderDetail as Wms.Data.WmsEntryOrderDetail).planQty =
                                 (TError.RunGood.Int() == MangoFactory.GetPlanQuantityByPid(s.ProductBuyId.ToString(), out tmpPlanQty)) ? tmpPlanQty : -1;
                         }
-                        #endregion
+#endregion
 
                         // 设置商品Id
                         cso.Product.ItemCode = (string.IsNullOrEmpty(s.ProductGuiGeID.ToString()) || "0".Equals(s.ProductGuiGeID.ToString())) ?
@@ -207,7 +284,9 @@ namespace C_WMS.Data.CWms
                 return null;
             }
         }
+#endif
 
+#if false // 由WMS模块处理
         /// <summary>
         /// 根据芒果商城的入库订单生成入库订单接口的HTTP request XML实例。
         /// </summary>
@@ -219,13 +298,13 @@ namespace C_WMS.Data.CWms
             HttpReqXml_EntryOrderCreate reqObj = null;
             List<HttpReqXml_EntryOrderCreate_Order> reqSubOrderList = new List<HttpReqXml_EntryOrderCreate_Order>(1);
 
-            #region validate arguments
+#region validate arguments
             if (string.IsNullOrEmpty(pEntryOrderId))
             {
                 C_WMS.Data.Utility.MyLog.Instance.Error("根据芒果商城的入库订单[{0}]生成入库订单接口的HTTP request XML实例结束，非法入参", pEntryOrderId);
                 return reqObj;
             }
-            #endregion
+#endregion
 
             // get main entry order from ‘主入库单表’
             CWmsEntryOrder cwmsOrder = GetCWmsEntryOrder(pEntryOrderId);
@@ -251,9 +330,9 @@ namespace C_WMS.Data.CWms
             
             return reqObj;
         }
-        #endregion
+#endif
 
-        #region 出库订单
+#if false // 使用static public int GetV_Order
         /// <summary>
         /// 获取所有符合条件的主出库订单，若执行成功则返回获取的行数，否则返回TError.WCF_RunError和Count=0的主出库订单列表
         /// </summary>
@@ -280,7 +359,7 @@ namespace C_WMS.Data.CWms
                 {
                     foreach (MangoExwarehouseOrder smo in orderList)
                     {
-                        #region 获取子出库单
+#region 获取子出库单
                         List<MangoSubExwarehouseOrder> subList = null;
                         errMsg = MangoFactory.GetMangoExwarehouseSubOrderList(smo.ProductOutputMainId.ToString(), out subList);
                         if (null == subList || 0 == subList.Count)
@@ -288,8 +367,8 @@ namespace C_WMS.Data.CWms
                             C_WMS.Data.Utility.MyLog.Instance.Error("在{0}中，获取主出库单({1})的子出库单失败, err={2}, errMsg={3}", System.Reflection.MethodBase.GetCurrentMethod().Name, smo?.ProductOutputMainId, err, errMsg);
                             continue;
                         }
-                        #endregion
-                        #region 处理子出库单
+#endregion
+#region 处理子出库单
                         CWmsExWarehouseOrder ceo = new CWmsExWarehouseOrder();
                         foreach (var mso in subList)
                         {
@@ -304,7 +383,7 @@ namespace C_WMS.Data.CWms
                             (cso.MangoOrder as MangoSubExwarehouseOrder).CopyFrom(mso);
                             ceo.SubOrders.Add(mso.ProductOutputId.ToString(), cso);
                         }
-                        #endregion
+#endregion
                         if (0 < ceo.SubOrders.Count)
                         {
                             (ceo.MangoOrder as MangoExwarehouseOrder).CopyFrom(smo);
@@ -328,7 +407,8 @@ namespace C_WMS.Data.CWms
                 return TError.Post_NoChange.Int();
             }
         }
-
+#endif
+#if false // 使用Handler.NewOrder
         /// <summary>
         /// 根据主订单Id获取芒果商城的订单实体及其子订单明细的实体
         /// </summary>
@@ -430,7 +510,8 @@ namespace C_WMS.Data.CWms
                 return null;
             }
         }
-
+#endif
+#if false // 由WMS模块处理
         /// <summary>
         /// 根据芒果商城的出库订单生成出库订单接口的HTTP request XML实例。
         /// </summary>
@@ -442,13 +523,13 @@ namespace C_WMS.Data.CWms
             HttpReqXml_StockoutOrderCreate reqObj = null;
             List<HttpReqXml_StockoutOrderCreate_OrderLine> reqSubOrderList = null;
 
-            #region validate parameters
+#region validate parameters
             if (string.IsNullOrEmpty(pEntryOrderId))
             {
                 C_WMS.Data.Utility.MyLog.Instance.Error("根据主出库订单[{0}]获取主出库订单及其所有子订单的实例结束，非法入参", pEntryOrderId);
                 return reqObj;
             }
-            #endregion
+#endregion
 
             // get main order from ‘主出库单表’
             CWmsExWarehouseOrder cwmsOrder = GetCWmsStockoutOrder(pEntryOrderId);
@@ -473,9 +554,9 @@ namespace C_WMS.Data.CWms
             
             return reqObj;
         }
-        #endregion
+#endif
 
-        #region 退货订单
+#if false // 由WMS模块处理
         /// <summary>
         /// 根据主退货订单Id获取主退货订单实体及其所有子退货订单的实体
         /// </summary>
@@ -492,10 +573,10 @@ namespace C_WMS.Data.CWms
 
             try
             {
-                #region 从商城里获取主退货订单及其所有子单据
+#region 从商城里获取主退货订单及其所有子单据
                 order = GetCWmsReturnOrder(pRid);
-                #endregion
-                #region 根据商城的退货订单创建HttpRespXml_ReturnOrderCreate实体
+#endregion
+#region 根据商城的退货订单创建HttpRespXml_ReturnOrderCreate实体
                 if (null != order)
                 {
                     orderLinesList = new List<HttpReqXml_ReturnOrderCreate_Orders>(1);
@@ -518,7 +599,7 @@ namespace C_WMS.Data.CWms
                 {
                     ret.Append(string.Format("从商城里获取主退货订单及其所有子单据失败，order={0}", order));
                 }
-                #endregion
+#endregion
             }
             catch (Exception ex)
             {
@@ -528,7 +609,8 @@ namespace C_WMS.Data.CWms
             ret.End();
             return retObj;
         }
-
+#endif
+#if false // Handler.NewOrder
         /// <summary>
         /// 根据主退货订单ID获取主退货订单及其所有子订单的实例
         /// </summary>
@@ -542,25 +624,25 @@ namespace C_WMS.Data.CWms
             MangoReturnOrder mangoOrder = null;
             List<MangoSubReturnOrder> tmpList = new List<MangoSubReturnOrder>(1); ;   // 缓存子退货订单实体列表
 
-            #region validate parameters
+#region validate parameters
             if (string.IsNullOrEmpty(pOrderId)) {
                 ret.Append(string.Format("根据主退货订单{0}获取主退货订单及其所有子订单的实例失败， 非法入参", pOrderId));
                 ret.End();
                 return retObj;
             }
-            #endregion
+#endregion
             try
             {
-                #region Handle MangoOrder
-                #region  获取主退货订单 MangoReturnOrder
+#region Handle MangoOrder
+#region  获取主退货订单 MangoReturnOrder
                 if (null == (mangoOrder = MangoFactory.GetMangoOrder(TCWmsOrderCategory.EReturnOrder, pOrderId) as MangoReturnOrder))
                 {
                     ret.Append(string.Format("根据主退货订单{0}获取主退货订单及其所有子订单的实例失败， 获取主退货订单失败", pOrderId));
                     ret.End();
                     return retObj;
                 }
-                #endregion
-                #region 获取子退货订单列表 List<MangoSubReturnOrder>
+#endregion
+#region 获取子退货订单列表 List<MangoSubReturnOrder>
                 errMsg = MangoFactory.GetVSubReturnOrders(pOrderId, out tmpList);
                 ret.Append(string.Format("tmplist.count={0}",tmpList.Count));
                 ret.Append(string.Format("errMsg={0}", errMsg));
@@ -571,9 +653,9 @@ namespace C_WMS.Data.CWms
                     ret.End();
                     return retObj;
                 }
-                #endregion
-                # endregion // Handle MangoOrder
-                #region 创建CWmsReturnOrder实例及其子出库订单实例列表
+#endregion
+#endregion // Handle MangoOrder
+#region 创建CWmsReturnOrder实例及其子出库订单实例列表
                 retObj = new CWmsReturnOrder();
                 (retObj.MangoOrder as MangoReturnOrder).CopyFrom(mangoOrder);
                 foreach (var t in tmpList)
@@ -590,7 +672,7 @@ namespace C_WMS.Data.CWms
                             t.ProductId.ToString() : string.Format("{0}-{1}", t.ProductId, t.ProductGuiGeID);
                     retObj.SubOrders.Add(t.ZiTuihuoID.ToString(), tmpSo);// new CWmsSubReturnOrder(t, null));
                 }
-                #region Handle WMS order
+#region Handle WMS order
                 switch ((T芒果商城退货物流)(retObj.MangoOrder as MangoReturnOrder).THwuLiu)
                 {
                     case T芒果商城退货物流.自行返还:
@@ -609,7 +691,7 @@ namespace C_WMS.Data.CWms
                             break;
                         }
                 }
-                #region TuiHuoType
+#region TuiHuoType
                 switch ((retObj.MangoOrder as MangoReturnOrder).TuiHuoType)
                 {
                     case 2:
@@ -627,9 +709,9 @@ namespace C_WMS.Data.CWms
                             break;
                         }
                 }
-                #endregion 
-                #endregion // Handle WMS order
-                #endregion // 创建CWmsReturnOrder实例及其子出库订单实例列表
+#endregion
+#endregion // Handle WMS order
+#endregion // 创建CWmsReturnOrder实例及其子出库订单实例列表
             }
             catch (Exception ex)
             {
@@ -640,9 +722,9 @@ namespace C_WMS.Data.CWms
             ret.End();
             return retObj;
         }
-        #endregion
-
-        #region 单据取消
+#endif
+#if false // 暂不支持
+#region 单据取消
         /// <summary>
         /// 根据主单据ID获取单据及其所有子单据的实例.
         /// </summary>
@@ -675,9 +757,9 @@ namespace C_WMS.Data.CWms
             ret.End();
             return retObj;
         }
-        #endregion
-
-        #region 货主
+#endregion
+#endif
+#if false // Handler.NewOrder
         /// <summary>
         /// 获取CWmsOrderBase实体
         /// </summary>
@@ -696,7 +778,7 @@ namespace C_WMS.Data.CWms
                 default: return null;
             }
         }
-        #endregion
+#endif
 
 #region 供应商
 #if false

@@ -10,7 +10,11 @@ namespace C_WMS.Data
     /// </summary>
     public class CWmsConsts
     {
-#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
+        public const int cIntDefaultWcfQueryPageSize = 399;
+        public const int cIntDefaultDisorder = 100;
+        public const int cInt芒果商城订单群Id = 18140;
+        public const int cInt芒果钉秘Id = 11007;
+
 #if false
         /// <summary>
         /// 默认C-WMS货主ID //TODO配置之一
@@ -21,7 +25,6 @@ namespace C_WMS.Data
         /// 默认C-WMS货主名称
         /// </summary>
         public const string cStrDefaultOwnerName = cStrWmsOwnerName_MGWL;
-#endif
         /// <summary>
         /// 允许部分发货
         /// </summary>
@@ -32,20 +35,10 @@ namespace C_WMS.Data
         /// </summary>
         public const string cStrStockoutPartialShipmentN = "N";
         public const string cStrStockoutPartialShipmentDefault = cStrStockoutPartialShipmentN;
-
-        /// <summary>
-        /// 通过WCF获取数据时，默认的page size.
-        /// </summary>
-        public const int cIntDefaultWcfQueryPageSize = 399;
-
-
-#if false
         /// <summary>
         /// 商品同步接口默认操作类型
         /// </summary>
         public const string sStrApiItemsSyncActionTypeUpdate = "update";
-        public const int cInt芒果商城订单群Id = 18140;
-        public const int cInt芒果钉秘Id = 11007;
         public const string cStrHttpMethodPost = "POST";
         public const string cStrHttpMethodGet = "GET";
         public const string cStrHttpConentType_TxtXml = "text/xml";
@@ -122,6 +115,5 @@ namespace C_WMS.Data
         /// </summary>
         public const string cStrDefaultWarehouseId = "芒果网络沈阳仓"; // "MG_LOGISTICSCODE_QT";
 #endif
-#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
     }
 }

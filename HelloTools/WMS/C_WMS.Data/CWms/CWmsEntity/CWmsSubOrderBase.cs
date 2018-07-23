@@ -50,7 +50,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
         /// <summary>
         /// 
         /// </summary>
-        public abstract string Id { get; protected set; }
+        public abstract string Id { get; }
         #endregion
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
         /// </summary>
         protected CWmsSubOrderBase()
         {
-            mProduct = new CWmsProduct();
+            Product = new CWmsProduct();
         }
 
 #if false

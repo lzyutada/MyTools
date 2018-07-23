@@ -10,14 +10,23 @@ namespace C_WMS.Data.CWms.CWmsEntity
     /// <summary>
     /// 子退货订单类
     /// </summary>
-    public class CWmsSubReturnOrder:CWmsSubOrderBase
+    class CWmsSubReturnOrder:CWmsSubOrderBase<CWmsSubReturnOrder, MangoSubReturnOrder, WmsReturnOrderDetail, CWmsSubReturnOrderHandler>
     {
+        /// <summary>
+        /// overrided，返回子退货订单Id
+        /// </summary>
+        /// <returns></returns>
+        public override string Id
+        {
+            get { return (MangoOrder as MangoSubReturnOrder).ZiTuihuoID.ToString(); }
+        }
+
         /// <summary>
         /// default constructor
         /// </summary>
         public CWmsSubReturnOrder() {
-            mMangoOrder = new MangoSubReturnOrder();
-            mWmsOrder = new Wms.Data.WmsReturnOrderDetail();
+            MangoOrder = new MangoSubReturnOrder();
+            WmsOrder = new WmsReturnOrderDetail();
         }
         
         /// <summary>
@@ -27,17 +36,15 @@ namespace C_WMS.Data.CWms.CWmsEntity
         /// <param name="pWmsOrder">source object of WmsReturnOrderDetail</param>
         public void CopyFrom(MangoSubReturnOrder pMangoOrder, WmsReturnOrderDetail pWmsOrder)
         {
-            (MangoOrder as MangoSubReturnOrder).CopyFrom(pMangoOrder);
-            (WmsOrderDetail as WmsReturnOrderDetail).CopyFrom(pWmsOrder);
+            MangoOrder.CopyFrom(pMangoOrder);
+            WmsOrder.CopyFrom(pWmsOrder);
         }
+    }
 
-        /// <summary>
-        /// overrided，返回子退货订单Id
-        /// </summary>
-        /// <returns></returns>
-        public override string GetId()
-        {
-            return (MangoOrder as MangoSubReturnOrder).ZiTuihuoID.ToString();
-        }
+    /// <summary>
+    /// 子单据实体DataHandler类
+    /// </summary>
+    class CWmsSubReturnOrderHandler : CWmsSubOrderBaseHandlerBase<CWmsSubReturnOrder, MangoSubReturnOrder, CWmsSubReturnOrder>
+    {
     }
 }

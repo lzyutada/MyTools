@@ -323,13 +323,13 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 }
                 else
                 {
-                    C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.{1}<{2}>({3})，没有获取到实体(wcfRslt={4}, wcfRslt.RetInt={5}, wcfRslt.RETData={6}, wcfRslt.Debug={7}), Filter debug:\r\n{8}", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, typeof(TEntity), pFilters, wcfRslt, wcfRslt?.RetInt, wcfRslt?.RETData, wcfRslt?.Debug, GetDebugInfo_MisFilter(pFilters));
+                    C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.{1}<{2}>({3})，没有获取到实体(wcfRslt={4}, wcfRslt.RetInt={5}, wcfRslt.RETData={6}, wcfRslt.Debug={7}), Filter debug:\r\n{8}", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, typeof(TEntity), pFilters, wcfRslt, wcfRslt?.RetInt, wcfRslt?.RETData, wcfRslt?.Debug, Utility.CWmsDataUtility.GetDebugInfo_MisFilter(pFilters));
                     return null;
                 }
             }
             catch(Exception ex)
             {
-                C_WMS.Data.Utility.MyLog.Instance.Warning(ex, "!!Exception in {0}.{1}<{2}>({3})，Filters debug:\r\n{4}", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, typeof(TEntity), pFilters, GetDebugInfo_MisFilter(pFilters));
+                C_WMS.Data.Utility.MyLog.Instance.Warning(ex, "!!Exception in {0}.{1}<{2}>({3})，Filters debug:\r\n{4}", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, typeof(TEntity), pFilters, Utility.CWmsDataUtility.GetDebugInfo_MisFilter(pFilters));
                 return null;
             }
         }
@@ -626,36 +626,5 @@ namespace C_WMS.Data.Mango.MisModelPWI
             return retStr;
         }
 #endregion
-
-        /// <summary>
-        /// get debug info descriptor of MIS entity filters.
-        /// this method should not throw exception.
-        /// </summary>
-        /// <param name="pFilters">filter to be debugged.</param>
-        /// <returns></returns>
-        static public string GetDebugInfo_MisFilter(List<CommonFilterModel> pFilters)
-        {
-            string dbgInfo = "FILTER DEBUG INFO: ";
-            try
-            {
-                if (null == pFilters || 0 == pFilters.Count)
-                {
-                    return dbgInfo += string.Format("empty pFilters.Count={0}", pFilters?.Count);
-                }
-                else
-                {
-                    foreach (CommonFilterModel f in pFilters)
-                    {
-                        dbgInfo += string.Format("\r\nFilter({0})[Name={1}, Filter={2}, Value={3}]", f, f?.Name, f?.Filter, f?.Value);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                dbgInfo += string.Format("!!Exception, {0}.{1}({2})", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, pFilters);
-                C_WMS.Data.Utility.MyLog.Instance.Error(ex, dbgInfo);
-            }
-            return dbgInfo;
-        }
     }
 }

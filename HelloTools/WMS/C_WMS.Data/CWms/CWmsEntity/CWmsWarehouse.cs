@@ -1,5 +1,6 @@
 ﻿using C_WMS.Data.Mango.Data;
 using C_WMS.Interface.CWms.CWmsEntity;
+using MangoMis.Frame.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,17 +18,23 @@ namespace C_WMS.Data.CWms.CWmsEntity
         /// <summary>
         /// get entity of warehouse in Mis
         /// </summary>
-        public MangoWarehouse MangoEntity { get; private set; }
+        public MangoWarehouse Mango { get; protected set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string WarehouseCode
+        public string WarehouseCode { get { return _handler.GetWarehouseCode(this); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="name"></param>
+        public CWmsWarehouse(string code, string name)
         {
-            get
-            {
-                return _handler.GetWarehouseCode(this);
-            }
+            Mango.WarehouseId = code.Int();
+            EntityName = name;
         }
 
         public override void Dispose()

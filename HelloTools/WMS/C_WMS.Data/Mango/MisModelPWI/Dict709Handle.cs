@@ -17,7 +17,6 @@ namespace C_WMS.Data.Mango.MisModelPWI
     /// </summary>
     class Product_WMS_Interface_Properties
     {
-        public const int cIntDisorderDefault = 100;
         #region
         public const string PropName_AddTime = "AddTime";
         public const string PropName_AddUserid = "AddUserid";

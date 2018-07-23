@@ -222,7 +222,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
                 0,  // 0st
                 pAddOnNotFound, // 1st
                 new DefDlgt_RunWCF<Product_WMS_Interface>(DlgtFunc_RunWCF<Product_WMS_Interface>), // 2nd
-                MangoFactory.GetPwiListFromOrder(pOrder.Id, pOrder.SubOrders.Keys),//GetPwiListFromOrder(pOrder), // 3rd
+                MangoFactory.GetV_PwiList(Get709MapClassId(), pOrder.Id, pOrder.SubOrders.Keys),//GetPwiListFromOrder(pOrder), // 3rd
                 pOrder.Id,  // 4th
                 pIsUpdateOk,    // 5th
                 pIsDel  // 6th

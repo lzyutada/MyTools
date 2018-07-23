@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CWMS_LOGHELPER</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CWMS_LOGHELPER,C_WMS_V2</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\C_WMS.Data.XML</DocumentationFile>
@@ -109,56 +109,57 @@
     <Compile Include="CWms\CWmsEntity\CWmsEntryOrder.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsExWarehouseOrder.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsExWarehouseSubOrder.cs" />
-    <Compile Include="CWms\CWmsEntity\CWmsMallOrder.cs" />
-    <Compile Include="CWms\CWmsEntity\CWmsMcocOrder.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsOrderBase.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsOwner.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsProduct.cs" />
-    <Compile Include="CWms\CWmsEntity\CWmsPurchaseOrder.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsReturnOrder.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsSubEntryOder.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsSubOrderBase.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsSubReturnOrder.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsWarehouse.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpPostPramsEntity.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpReqXmlBase.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpReqXml_EntryOrderCreate.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpReqXml_InventoryMonitoring.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpReqXml_ItemsSyncronize.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpReqXml_OrderCacnel.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpReqXml_ReturnOrderCreate.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpReqXml_StockoutOrderCreate.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpRespXml_EntryOrderCreate.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpRespXml_InventoryMonitoring.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpRespXml_ItemsSynchronize.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpRespXml_OrderCancel.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpRespXml_ReturnOrderCreate.cs" />
-    <Compile Include="CWms\Interfaces\Data\HttpRespXml_StockoutOrderCreate.cs" />
-    <Compile Include="CWms\Interfaces\Methods\CWmsEntryOrderCreate.cs">
+    <Compile Include="CWms\Interfaces\Data\CWmsTransReqObjBase.cs" />
+    <Compile Include="CWms\Interfaces\Data\CWmsTransRespObjBase.cs" />
+    <Compile Include="CWms\Interfaces\Methods\MWmsTransactionImplBase.cs" />
+    <Compile Include="Wms\Data\HttpPostPramsEntity.cs" />
+    <Compile Include="Wms\Data\HttpReqXmlBase.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_EntryOrderCreate.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_InventoryMonitoring.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_ItemsSyncronize.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_OrderCacnel.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_ReturnOrderCreate.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_StockoutOrderCreate.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_EntryOrderCreate.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_InventoryMonitoring.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_ItemsSynchronize.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_OrderCancel.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_ReturnOrderCreate.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_StockoutOrderCreate.cs" />
+    <Compile Include="Wms\Transaction\CWmsEntryOrderCreate.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CWms\Interfaces\Methods\CWmsInventory_Monitoring.cs">
+    <Compile Include="Wms\Transaction\CWmsInventory_Monitoring.cs" />
+    <Compile Include="Wms\Transaction\CWmsMethod_ItemsSync.cs" />
+    <Compile Include="Wms\Transaction\CWmsOrderCancel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CWms\Interfaces\Methods\CWmsMethod_ItemsSync.cs">
+    <Compile Include="Wms\Transaction\CWmsOrdersSync_EntryOrder.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CWms\Interfaces\Methods\CWmsOrderCancel.cs">
+    <Compile Include="Wms\Transaction\CWmsOrdersSync_StockoutOrder.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CWms\Interfaces\Methods\CWmsOrdersSync_EntryOrder.cs">
+    <Compile Include="CWms\Interfaces\Methods\MWmsTransactionBase.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CWms\Interfaces\Methods\CWmsOrdersSync_StockoutOrder.cs">
+    <Compile Include="Wms\Transaction\CWmsReturnOrderCreate.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CWms\Interfaces\Methods\CWmsPostTransactionBase.cs" />
-    <Compile Include="CWms\Interfaces\Methods\CWmsReturnOrderCreate.cs">
+    <Compile Include="Wms\Transaction\CWmsStockoutCreate.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CWms\Interfaces\Methods\CWmsStockoutCreate.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CWms\Interfaces\Methods\ICWmsPostTransaction.cs" />
+    <Compile Include="CWms\Interfaces\Methods\ICWmsInventory_Monitoring_Impl.cs" />
+    <Compile Include="CWms\Interfaces\Methods\IMWmsTransactionImpl.cs" />
+    <Compile Include="CWms\Interfaces\Methods\IMWmsTransaction.cs" />
     <Compile Include="Mango\Data\MangoEntityBase.cs" />
     <Compile Include="Mango\Data\MangoEntryOrder.cs" />
     <Compile Include="Mango\Data\MangoExwarehouseOrder.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="Utility\CWmsAsyncControler.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utility\CWmsDataUtility.cs" />
     <Compile Include="Utility\CWmsReflectionHelper.cs" />
     <Compile Include="Utility\CWmsXmlSerializer.cs" />
     <Compile Include="Utility\MyLog.cs" />
@@ -197,6 +199,7 @@
     <Compile Include="Wms\Data\WmsReturnOrderDetail.cs" />
     <Compile Include="Wms\Data\WmsStockoutOrder.cs" />
     <Compile Include="Wms\Data\WmsStockoutOrderDetail.cs" />
+    <Compile Include="Wms\Transaction\CWmsTransactionImplBase.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

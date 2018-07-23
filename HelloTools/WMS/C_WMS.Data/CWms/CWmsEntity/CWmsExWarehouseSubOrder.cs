@@ -76,7 +76,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
     /// <summary>
     /// 
     /// </summary>
-    class CWmsExWarehouseSubOrderHandler : CWmsSubOrderBaseHandlerBase<CWmsExWarehouseSubOrder, MangoSubExwarehouseOrder, WmsStockoutOrderDetail, CWmsExWarehouseSubOrderHandler>
+    class CWmsExWarehouseSubOrderHandler : CWmsSubOrderBaseHandlerBase<CWmsExWarehouseSubOrder, MangoSubExwarehouseOrder, WmsStockoutOrderDetail>
     {
     }
 }
