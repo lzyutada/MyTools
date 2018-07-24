@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9300D045-8AFA-4564-9FC3-C0FDC3FB0AD8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>C_WMS.Data</RootNamespace>
+    <AssemblyName>C_WMS.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CWMS_LOGHELPER,C_WMS_V2</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\C_WMS.Data.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Activity.Interface">
+      <HintPath>\\dll.517.jiali\dll\mango-misnet2014\Activity.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="C_WMS.Interface">
+      <HintPath>\\dll.517.jiali\dll\mango-misnet2014\C_WMS.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="IMisService_2">
+      <HintPath>\\dll.517.jiali\dll\apiCacheInterface_V2.0\IMisService_2.dll</HintPath>
+    </Reference>
+    <Reference Include="ISecondBase_2">
+      <HintPath>\\dll.517.jiali\dll\common_V2.0\ISecondBase_2.dll</HintPath>
+    </Reference>
+    <Reference Include="Mango.TT.Frame">
+      <HintPath>\\dll.517.jiali\dll\common_V2.0\Mango.TT.Frame.dll</HintPath>
+    </Reference>
+    <Reference Include="MangoMis.Frame">
+      <HintPath>\\dll.517.jiali\dll\common_V2.0\MangoMis.Frame.dll</HintPath>
+    </Reference>
+    <Reference Include="MangoMis.MisFrame">
+      <HintPath>\\dll.517.jiali\dll\common_V2.0\MangoMis.MisFrame.dll</HintPath>
+    </Reference>
+    <Reference Include="MisModel_1">
+      <HintPath>\\dll.517.jiali\dll\apisqlmodel_V2.0\MisModel_1.dll</HintPath>
+    </Reference>
+    <Reference Include="PubModel_1">
+      <HintPath>\\dll.517.jiali\dll\apisqlmodel_V2.0\PubModel_1.dll</HintPath>
+    </Reference>
+    <Reference Include="Send.Interface">
+      <HintPath>\\dll.517.jiali\dll\mango-misnet2014\Send.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="Product.Interface">
+      <HintPath>\\dll.517.jiali\dll\mango-misnet2014\Product.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="TT.Common.Frame.Model">
+      <HintPath>\\dll.517.jiali\dll\common_V2.0\TT.Common.Frame.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="OrgModel_1">
+      <HintPath>\\dll.517.jiali\dll\apisqlmodel_V2.0\OrgModel_1.dll</HintPath>
+    </Reference>
+    <Reference Include="TT.Frame.Decrypt">
+      <HintPath>\\dll.517.jiali\dll\common_V2.0\TT.Frame.Decrypt.dll</HintPath>
+    </Reference>
+    <Reference Include="UserModel_1">
+      <HintPath>\\dll.517.jiali\dll\apisqlmodel_V2.0\UserModel_1.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TT.Common.Frame.Model">
+      <HintPath>\\dll.517.jiali\dll\common_V2.0\TT.Common.Frame.Model.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CWmsConsts.cs" />
+    <Compile Include="CWmsVisor.cs" />
+    <Compile Include="CWms\CWmsDataFactory.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsEntryOrder.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsExWarehouseOrder.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsExWarehouseSubOrder.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsOrderBase.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsOwner.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsProduct.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsReturnOrder.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsSubEntryOder.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsSubOrderBase.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsSubReturnOrder.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsWarehouse.cs" />
+    <Compile Include="CWms\Interfaces\Data\CWmsTransReqObjBase.cs" />
+    <Compile Include="CWms\Interfaces\Data\CWmsTransRespObjBase.cs" />
+    <Compile Include="CWms\Interfaces\Methods\MWmsTransactionImplBase.cs" />
+    <Compile Include="Wms\Data\HttpPostPramsEntity.cs" />
+    <Compile Include="Wms\Data\HttpReqXmlBase.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_EntryOrderCreate.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_InventoryMonitoring.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_ItemsSyncronize.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_OrderCacnel.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_ReturnOrderCreate.cs" />
+    <Compile Include="Wms\Data\HttpReqXml_StockoutOrderCreate.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_EntryOrderCreate.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_InventoryMonitoring.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_ItemsSynchronize.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_OrderCancel.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_ReturnOrderCreate.cs" />
+    <Compile Include="Wms\Data\HttpRespXml_StockoutOrderCreate.cs" />
+    <Compile Include="Wms\Transaction\CWmsEntryOrderCreate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Wms\Transaction\CWmsInventory_Monitoring.cs" />
+    <Compile Include="Wms\Transaction\CWmsMethod_ItemsSync.cs" />
+    <Compile Include="Wms\Transaction\CWmsOrderCancel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Wms\Transaction\CWmsOrdersSync_EntryOrder.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Wms\Transaction\CWmsOrdersSync_StockoutOrder.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CWms\Interfaces\Methods\MWmsTransactionBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Wms\Transaction\CWmsReturnOrderCreate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Wms\Transaction\CWmsStockoutCreate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CWms\Interfaces\Methods\ICWmsInventory_Monitoring_Impl.cs" />
+    <Compile Include="CWms\Interfaces\Methods\IMWmsTransactionImpl.cs" />
+    <Compile Include="CWms\Interfaces\Methods\IMWmsTransaction.cs" />
+    <Compile Include="Mango\Data\MangoEntityBase.cs" />
+    <Compile Include="Mango\Data\MangoEntryOrder.cs" />
+    <Compile Include="Mango\Data\MangoExwarehouseOrder.cs" />
+    <Compile Include="Mango\Data\MangoMallOrder.cs" />
+    <Compile Include="Mango\Data\MangoOrderBase.cs" />
+    <Compile Include="Mango\Data\MangoProduct.cs" />
+    <Compile Include="Mango\Data\MangoPurchaseOrder.cs" />
+    <Compile Include="Mango\Data\MangoReturnOrder.cs" />
+    <Compile Include="Mango\Data\MangoSubEntryOrder.cs" />
+    <Compile Include="Mango\Data\MangoSubExwarehouseOrder.cs" />
+    <Compile Include="Mango\Data\MangoSubPurchaseOrder.cs" />
+    <Compile Include="Mango\Data\MangoSubReturnOrder.cs" />
+    <Compile Include="Mango\Data\MangoWarehouse.cs" />
+    <Compile Include="Mango\MangoFactory.cs" />
+    <Compile Include="Mango\MangoWCF.cs" />
+    <Compile Include="Mango\MisModelPWI\CWmsMisSystemParam.cs" />
+    <Compile Include="Mango\MisModelPWI\Dict709Handle.cs" />
+    <Compile Include="Mango\MisModelPWI\MisModelFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeDefs.cs" />
+    <Compile Include="Utility\CWmsAsyncControler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utility\CWmsDataUtility.cs" />
+    <Compile Include="Utility\CWmsReflectionHelper.cs" />
+    <Compile Include="Utility\CWmsXmlSerializer.cs" />
+    <Compile Include="Utility\MyLog.cs" />
+    <Compile Include="Wms\Data\WmsEntityBase.cs" />
+    <Compile Include="Wms\Data\WmsEntryOrder.cs" />
+    <Compile Include="Wms\Data\WmsEntryOrderDetail.cs" />
+    <Compile Include="Wms\Data\WmsLogistics.cs" />
+    <Compile Include="Wms\Data\WmsOrderBase.cs" />
+    <Compile Include="Wms\Data\WmsOrderDetailBase.cs" />
+    <Compile Include="Wms\Data\WmsOwner.cs" />
+    <Compile Include="Wms\Data\WmsProduct.cs" />
+    <Compile Include="Wms\Data\WmsReturnOrder.cs" />
+    <Compile Include="Wms\Data\WmsReturnOrderDetail.cs" />
+    <Compile Include="Wms\Data\WmsStockoutOrder.cs" />
+    <Compile Include="Wms\Data\WmsStockoutOrderDetail.cs" />
+    <Compile Include="Wms\Transaction\CWmsTransactionImplBase.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
