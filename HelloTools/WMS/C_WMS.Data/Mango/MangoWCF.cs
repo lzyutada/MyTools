@@ -186,7 +186,7 @@ namespace C_WMS.Data.Mango
                 var rslt = new ClientV3<TEntity>().GetList(page, size, pFilters, pOrders);
                 if (null == rslt || null == rslt.Data)
                 {
-                    C_WMS.Data.Utility.MyLog.Instance.Warning("WCF(V3)，根据（{0}, {1}, {2}, {3}）获取实体列表失败. WCF_RESULT(rslt={4}, RetInt={5}, RETData={6}, Debug={7}). \r\nFILTER DEBUG: {8}", pFilters, pOrders, page, size, rslt, rslt?.RetInt, rslt?.RETData, rslt?.Debug, MisModelPWI.MisModelFactory.GetDebugInfo_MisFilter( pFilters));
+                    C_WMS.Data.Utility.MyLog.Instance.Warning("WCF(V3)，根据（{0}, {1}, {2}, {3}）获取实体列表失败. WCF_RESULT(rslt={4}, RetInt={5}, RETData={6}, Debug={7}). \r\nFILTER DEBUG: {8}", pFilters, pOrders, page, size, rslt, rslt?.RetInt, rslt?.RETData, rslt?.Debug, Utility.CWmsDataUtility.GetDebugInfo_MisFilter( pFilters));
                     return null;
                 }
                 return rslt;

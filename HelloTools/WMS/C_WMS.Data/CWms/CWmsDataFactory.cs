@@ -27,6 +27,18 @@ namespace C_WMS.Data.CWms
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// new an object of CWmsProduct by itemCode.
+        /// return the new object if success -or- return null if failed.
+        /// </summary>
+        /// <param name="itemCode">itemCode of product, in a format of [productId]-[specLinkId]</param>
+        /// <returns>return the new object if success -or- return null if failed.</returns>
+        static public CWmsProduct NewProduct(string itemCode)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 根据过滤器获取商品，并返回成功获取的商品数量。若操作失败则返回TError.WCFRunnError
         /// static public int GetProductList(List[CommonFilterModel], ref List[CWmsProduct], out string pMsg)
@@ -66,6 +78,11 @@ namespace C_WMS.Data.CWms
             return err;
         }
 
+        static public List<string> GetV_ProductIds(List<string> pIdList)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 获取默认货主
         /// </summary>
@@ -102,10 +119,12 @@ namespace C_WMS.Data.CWms
 
         static public IEnumerable<CWmsWarehouse> GetV_Warehouse(string pOwnerCode)
         {
+            throw new NotImplementedException();
         }
 
         static public IEnumerable<CWmsWarehouse> GetV_Warehouse(CWmsOwner pOwnerCode)
         {
+            throw new NotImplementedException();
         }
 
         static public int GetV_Order<TOrderType, TMangoOrderType, THandler>(List<CommonFilterModel> pFilters, out IEnumerable<TOrderType> pOutList, out string pErrMsg) where TOrderType: class, new()

@@ -18,29 +18,12 @@ namespace C_WMS.Data.CWms.CWmsEntity
         /// </summary>
         public TMangoType MangoOrder { get; protected set; }
 
-#if false
-        /// <summary>
-        /// 芒果商城订单实例
-        /// </summary>
-        protected EntityBase mMangoOrder = null;
-#endif
         /// <summary>
         /// 获取WMS系统的单据实例
         /// </summary>
         /// <returns></returns>
         public TWmsType WmsOrder { get; protected set; }
-#if false
-        /// <summary>
-        /// WMS系统的单据实例
-        /// </summary>
-        protected WmsOrderDetailBase mWmsOrder = null;
-#endif
-#if false
-        /// <summary>
-        /// 商品实例
-        /// </summary>
-        private CWmsProduct mProduct = null;
-#endif
+
         /// <summary>
         /// 获取商品实例
         /// </summary>
@@ -60,14 +43,6 @@ namespace C_WMS.Data.CWms.CWmsEntity
         {
             Product = new CWmsProduct();
         }
-
-#if false
-        /// <summary>
-        /// 获取子单据的ID
-        /// </summary>
-        /// <returns></returns>
-        abstract public string GetId();
-#endif
     }
 
     /// <summary>

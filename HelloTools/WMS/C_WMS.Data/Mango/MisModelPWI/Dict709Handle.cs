@@ -107,9 +107,39 @@ namespace C_WMS.Data.Mango.MisModelPWI
     /// <summary>
     /// 表Product_WMS_Interface的操作类
     /// </summary>
-    public class Dict709Handle
+    class Dict709Handle
     {
-        #region 商品相关
+#if !C_WMS_V1
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pMapClassId"></param>
+        /// <param name="pMapId1"></param>
+        /// <param name="pMapId2"></param>
+        /// <param name="pUpdateOk"></param>
+        /// <param name="pDel"></param>
+        /// <param name="pMsg"></param>
+        /// <returns></returns>
+        static public int UpdateRow(TDict709_Value pMapClassId, string pMapId1, string pMapId2, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg)
+        {
+            throw new NotFiniteNumberException();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pMapClassId"></param>
+        /// <param name="pMapId1"></param>
+        /// <param name="pMapId2"></param>
+        /// <param name="pUpdateOk"></param>
+        /// <param name="pDel"></param>
+        /// <param name="pMsg"></param>
+        /// <returns></returns>
+        static public int UpdateRowA(TDict709_Value pMapClassId, string pMapId1, string pMapId2, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg)
+        {
+            throw new NotFiniteNumberException();
+        }
+#else
         /// <summary>
         /// 获取所有商品。若操作失败则返回Count=0的List
         /// </summary>
@@ -224,10 +254,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
             ret.End();
             return wcfPWI.RetInt;
         }
-
-        #endregion
-
-        #region 出库单
+        
         /// <summary>
         /// 新增一条创建出库订单的记录
         /// </summary>
@@ -256,7 +283,6 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 return rslt;
             }
         }
-
         /// <summary>
         /// 新增主出库订单的记录
         /// </summary>
@@ -268,7 +294,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
         {
             int rslt = TError.Ser_ErrorPost.Int();
             pCount = 0; pMsg = string.Empty;
-            CWmsExWarehouseOrder order = null; // 主出库订单实例
+            CWmsStockOrder order = null; // 主出库订单实例
 
             // validate parameters
             if (string.IsNullOrEmpty(pOrderId))
@@ -284,15 +310,15 @@ namespace C_WMS.Data.Mango.MisModelPWI
                     pMsg = "获取子出库订单列表失败";
                     return 0;
                 }
-                #region prepare updated rows
+// prepare updated rows
                 //rowList = new List<Product_WMS_Interface>(1);
                 foreach (var subOrder in order.SubOrders)
                 {
                     Product_WMS_Interface r = new Product_WMS_Interface();
-                    #region 实例赋值
+// 实例赋值
                     r.MapCalssID = (int)TDict709_Value.EExwarehouseOrder;
-                    r.MapId1 = (order.MangoOrder as MangoExwarehouseOrder).ProductOutputMainId;
-                    r.MapId2 = (subOrder.Value.MangoOrder as MangoSubExwarehouseOrder).ProductOutputId;
+                    r.MapId1 = (order.MangoOrder as MangoStockouOrder).ProductOutputMainId;
+                    r.MapId2 = (subOrder.Value.MangoOrder as MangoSubStockoutOrder).ProductOutputId;
                     r.IsUpdateOK = (int)TDict285_Values.EDeleted;
                     r.IsDel = (int)TDict285_Values.ENormal;
                     r.AddTime = DateTime.Now;
@@ -300,7 +326,6 @@ namespace C_WMS.Data.Mango.MisModelPWI
                     r.LastTime = r.AddTime;
                     r.UpdateUserID = r.AddUserid;
                     r.DisOrder = Product_WMS_Interface_Properties.cIntDisorderDefault;
-                    #endregion
                     if (0 == (rslt = AddRow_StockoutCreate(r, out pMsg)))
                     {
                         rslt = 0;
@@ -311,7 +336,6 @@ namespace C_WMS.Data.Mango.MisModelPWI
                         pCount += rslt;
                     }
                 }
-                #endregion
                 return rslt;
             }
             catch (Exception ex)
@@ -382,7 +406,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 {
                     DefaultResult<int> retRslt = null;
                     var wcfRslt = MangoWCF<Product_WMS_Interface>.GetEntity(pEntity.WMS_InterfaceId.Int());
-                    #region update/add row in Dict709
+// update/add row in Dict709
                     if (null == wcfRslt)
                     {
                         pMsg = string.Format("{0}.{1}, WCF查找({2}, {3}, {4})返回null", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, pEntity.WMS_InterfaceId, pEntity.MapId1, pEntity.MapId2);
@@ -401,8 +425,8 @@ namespace C_WMS.Data.Mango.MisModelPWI
                         pEntity.AddTime = wcfRslt.Data.AddTime;
                         retRslt = MangoWCF<Product_WMS_Interface>.Update(pEntity);
                     } // else, update the existing row
-                    #endregion
-                    #region handle updating/adding WCF result.
+
+        // handle updating/adding WCF result.
                     if (null == retRslt)
                     {
                         pMsg = string.Format("{0}.{1}, WCF(wcfRslt.Data={2})返回null [WCF({3}, {4}, {5})查找结果: {6}, {7}]", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, wcfRslt.Data, pEntity.WMS_InterfaceId, pEntity.MapId1, pEntity.MapId2, wcfRslt.RetInt, wcfRslt.Debug);
@@ -421,7 +445,6 @@ namespace C_WMS.Data.Mango.MisModelPWI
                         pWcfError = retRslt.Data;
                         return retRslt.RetInt;
                     } // else succeed in updating/adding
-                    #endregion
                 }
                 catch(Exception ex)
                 {
@@ -444,7 +467,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
         static public int UpdateRow_StockoutCreate(string pOrderId, TDict285_Values pUpdateOk, TDict285_Values pDel, out int pCount, out string pMsg)
         {
             pCount = 0; pMsg = string.Empty;
-            CWmsExWarehouseOrder order = null;
+            CWmsStockOrder order = null;
             Product_WMS_Interface tmpEntity = null;
 
             try
@@ -455,7 +478,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
                     return TError.WCF_RunError.Int();
                 }
 
-                #region prepare updated rows
+        #region prepare updated rows
                 foreach (var subOrder in order.SubOrders)
                 {
                     // 根据主单据Id和子单据Id找到行
@@ -472,10 +495,10 @@ namespace C_WMS.Data.Mango.MisModelPWI
                     else if (0 >= wcfPWI.RetInt) { tmpEntity = new Product_WMS_Interface(); } // 没有找到
                     else { tmpEntity = wcfPWI.Data[0]; } // 找到了一条
 
-                    #region 实例赋值并更新
+        #region 实例赋值并更新
                     tmpEntity.MapCalssID = TDict709_Value.EExwarehouseOrder.Int();
-                    tmpEntity.MapId1 = (order.MangoOrder as MangoExwarehouseOrder).ProductOutputMainId;
-                    tmpEntity.MapId2 = (subOrder.Value.MangoOrder as MangoSubExwarehouseOrder).ProductOutputId;
+                    tmpEntity.MapId1 = (order.MangoOrder as MangoStockouOrder).ProductOutputMainId;
+                    tmpEntity.MapId2 = (subOrder.Value.MangoOrder as MangoSubStockoutOrder).ProductOutputId;
                     tmpEntity.IsUpdateOK = pUpdateOk.Int();
                     tmpEntity.IsDel = pDel.Int();
                     tmpEntity.LastTime = DateTime.Now;
@@ -483,9 +506,9 @@ namespace C_WMS.Data.Mango.MisModelPWI
                     var updateRslt = (0 >= wcfPWI.RetInt) ? WCF<Product_WMS_Interface>.Add(tmpEntity) : WCF<Product_WMS_Interface>.Update(tmpEntity);
                     if (null == updateRslt) { pCount = TError.WCF_RunError.Int(); pMsg = "WCF返回null异常"; break; } // TODO: 系统异常
                     else { pCount++; pMsg = updateRslt.RETData; }
-                    #endregion
+        #endregion
                 }
-                #endregion
+        #endregion
 
                 return pCount;
             }
@@ -498,7 +521,6 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 return pCount = TError.WCF_RunError.Int();
             }
         }
-        #endregion
 
         #region 单据操作
         /// <summary>
@@ -535,14 +557,14 @@ namespace C_WMS.Data.Mango.MisModelPWI
         /// <returns>若成功则返回成功操作的行数；否则返回TError</returns>
         static public int UpdateRowA_Order(Product_WMS_Interface pEntity, out string pMsg)
         {
-            #region  validate parameters
+        #region  validate parameters
             //int ret = TError.WCF_RunError.Int();
             pMsg = string.Empty;
             DefaultResult<List<Product_WMS_Interface>> queryRslt = null;
             DefaultResult<int> rslt = null;
             if (null == pEntity){return TError.Post_ParamError.Int();}
-            #endregion
-            #region 在Dict[709]中找pEntity, var wcfPWI 
+        #endregion
+        #region 在Dict[709]中找pEntity, var wcfPWI 
             var filter = new List<CommonFilterModel>() { }; // query filter
             filter.Add(new CommonFilterModel(Product_WMS_Interface_Properties.PropName_MapId1, "=", pEntity.MapId1.ToString()));
             filter.Add(new CommonFilterModel(Product_WMS_Interface_Properties.PropName_MapId2, "=", pEntity.MapId2.ToString()));
@@ -557,8 +579,8 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 pMsg = string.Format("WCF操作失败, queryRslt.RetInt={0}, queryRslt.RetData={1}, queryRslt.Data={2}", queryRslt.RetInt, queryRslt.RETData, queryRslt.Data);
                 return queryRslt.RetInt;
             }
-            #endregion
-            #region WCF操作，更新或插入
+        #endregion
+        #region WCF操作，更新或插入
             if (0 == queryRslt.Data.Count) {
                 rslt = WCF<Product_WMS_Interface>.Add(pEntity);
             } // Dict[709]中没有符合条件的行，添加
@@ -566,8 +588,8 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 pEntity.WMS_InterfaceId = queryRslt.Data[0].WMS_InterfaceId;
                 rslt = WCF<Product_WMS_Interface>.Update(pEntity);
             } // Dict[709]中有符合条件的行，更新
-            #endregion
-            #region Handle result
+        #endregion
+        #region Handle result
             if (null == rslt)
             {
                 pMsg = "更新或插入，WCF操作记录行失败，返回null对象";
@@ -578,7 +600,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 pMsg = string.Format("UpdateRowA(Product_WMS_Interface pEntity)结束, rslt.RetInt={0}, rslt.RetData={1}, rslt.Data={2}", rslt.RetInt, rslt.RETData, rslt.Data);
                 return 1;
             }
-            #endregion
+        #endregion
         }
 
         /// <summary>
@@ -615,13 +637,13 @@ namespace C_WMS.Data.Mango.MisModelPWI
         /// <returns>若成功则返回成功操作的行数；否则返回TError.WCF_RunError</returns>
         static public int UpdateRow_Order(Product_WMS_Interface pEntity, out string pMsg)
         {
-            #region  validate parameters
+        #region  validate parameters
             pMsg = string.Empty;
             DefaultResult<List<Product_WMS_Interface>> queryRslt = null;
             DefaultResult<int> rslt = null;
             if (null == pEntity) { return TError.Post_ParamError.Int(); }
-            #endregion
-            #region 在Dict[709]中找pEntity, var wcfPWI 
+        #endregion
+        #region 在Dict[709]中找pEntity, var wcfPWI 
             var filter = new List<CommonFilterModel>() { }; // query filter
             filter.Add(new CommonFilterModel(Product_WMS_Interface_Properties.PropName_MapId1, "=", pEntity.MapId1.ToString()));
             filter.Add(new CommonFilterModel(Product_WMS_Interface_Properties.PropName_MapId2, "=", pEntity.MapId2.ToString()));
@@ -637,8 +659,8 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 pMsg = queryRslt.RETData;
                 return queryRslt.RetInt;
             }
-            #endregion
-            #region WCF操作，更新
+        #endregion
+        #region WCF操作，更新
             if (0 == queryRslt.Data.Count)
             {
                 pMsg = string.Format("Dict[709]中没有符合条件的行, MapId1={0}, MapId2={1}", pEntity.MapId1.ToString(), pEntity.MapId2.ToString());
@@ -649,7 +671,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 pEntity.WMS_InterfaceId = queryRslt.Data[0].WMS_InterfaceId;
 
                 rslt = WCF<Product_WMS_Interface>.Update(pEntity);
-                #region Handle result
+        #region Handle result
                 if (null == rslt)
                 {
                     pMsg = "更新或插入，WCF操作记录行失败，返回null对象";
@@ -660,9 +682,9 @@ namespace C_WMS.Data.Mango.MisModelPWI
                     pMsg = string.Format("UpdateRowA(Product_WMS_Interface pEntity)结束, rslt.RetInt={0}, rslt.RetData={1}, rslt.Data={2}", rslt.RetInt, rslt.RETData, rslt.Data);
                     return 1;
                 }
-                #endregion
+        #endregion
             } // Dict[709]中有符合条件的行，更新
-            #endregion
+        #endregion
         }
 
         /// <summary>
@@ -716,20 +738,20 @@ namespace C_WMS.Data.Mango.MisModelPWI
         /// <returns></returns>
         static public int UpdateRowV_Order(List<Product_WMS_Interface> pList, out List<Product_WMS_Interface> pfList, out int pWcfError, out string pMsg)
         {
-            #region template parameters
+        #region template parameters
             int rslt = 0;
             pfList = new List<Product_WMS_Interface>(1);
             pWcfError = TError.RunGood.Int();
             pMsg = string.Empty;
-            #endregion
-            #region validate parameters
+        #endregion
+        #region validate parameters
             if (null == pList)
             {
                 pWcfError = TError.Post_NoParam.Int(); pMsg = "UpdateRowV(List<Product_WMS_Interface>)错误，非法入参";
                 return rslt;
             }
-            #endregion
-            #region UpdateList
+        #endregion
+        #region UpdateList
             foreach (var e in pList)
             {
                 string tmpMsg = string.Empty;
@@ -738,7 +760,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 if (0 == tmpRslt) { pfList.Add(e); pWcfError = TError.WCF_RunError.Int(); }
                 else rslt += tmpRslt;
             }
-            #endregion
+        #endregion
             return rslt;
         }
 
@@ -791,20 +813,20 @@ namespace C_WMS.Data.Mango.MisModelPWI
         /// <returns>若成功则返回成功操作的行数；否则返回TError.Wcf_RunError</returns>
         static public int UpdateRowVA_Order(List<Product_WMS_Interface> pList, out List<Product_WMS_Interface> pfList, out int pWcfError, out string pMsg)
         {
-            #region template parameters
+        #region template parameters
             int rslt = 0; // 
             pfList = new List<Product_WMS_Interface>(1);
             pWcfError = TError.RunGood.Int();
             pMsg = string.Empty;
-            #endregion
-            #region validate parameters
+        #endregion
+        #region validate parameters
             if (null == pList)
             {
                 pWcfError = TError.Post_NoParam.Int(); pMsg = "UpdateRowVA(List<Product_WMS_Interface>)错误，非法入参";
                 return rslt;
             }
-            #endregion
-            #region UpdateList
+        #endregion
+        #region UpdateList
             foreach (var e in pList)
             {
                 string tmpMsg = string.Empty;
@@ -813,7 +835,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 if (0 == tmpRslt) { pfList.Add(e); pWcfError = TError.WCF_RunError.Int(); }
                 else rslt += tmpRslt;
             }
-            #endregion
+        #endregion
             return rslt;
         }
 
@@ -831,7 +853,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
         {
             try
             {
-                #region Product_WMS_Interface entity = new Product_WMS_Interface();
+        #region Product_WMS_Interface entity = new Product_WMS_Interface();
                 Product_WMS_Interface entity = new Product_WMS_Interface();
                 entity.MapCalssID = pMapClassId.Int();
                 entity.MapId1 = pEid.Int();
@@ -841,7 +863,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 entity.AddTime = entity.LastTime = DateTime.Now;
                 entity.AddUserid = entity.UpdateUserID = MangoMis.Frame.Frame.CommonFrame.userid;
                 entity.DisOrder = Product_WMS_Interface_Properties.cIntDisorderDefault;
-                #endregion
+        #endregion
                 return AddRow_Order(entity, out pMsg);
             }
             catch (Exception ex)
@@ -864,16 +886,16 @@ namespace C_WMS.Data.Mango.MisModelPWI
         /// <returns>返回操作成功的行数，若失败则返回DefaultResult[int].RetInt</returns>
         static public int AddRow_Order(Product_WMS_Interface pEntity, out string pMsg)
         {
-            #region  validate parameters
+        #region  validate parameters
             if (null == pEntity)
             {
                 pMsg = "AddRow结束，非法入参";
                 return TError.Post_ParamError.Int();
             }
-            #endregion
+        #endregion
             // WCF操作
             var retRslt = WCF<Product_WMS_Interface>.Add(pEntity);
-            #region Handle result
+        #region Handle result
             if (null == retRslt)
             {
                 pMsg = "WCF插入记录行失败，返回null对象";
@@ -884,7 +906,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 pMsg = string.Format("WCF插入记录行结束, retRslt.RetInt={0}, retRslt.RETData={1}, retRslt.Data={2}", retRslt.RetInt, retRslt.RETData, retRslt.Data);
                 return retRslt.RetInt;
             }
-            #endregion
+        #endregion
         }
 
         /// <summary>
@@ -897,19 +919,19 @@ namespace C_WMS.Data.Mango.MisModelPWI
         /// <returns>返回操作成功的行数，若失败则返回0</returns>
         static public int AddRowV_Order(List<Product_WMS_Interface> pList, out List<Product_WMS_Interface> pfList, out int pWcfError, out string pMsg)
         {
-            #region template parameters
+        #region template parameters
             int rslt = 0;
             pfList = new List<Product_WMS_Interface>(1);
             pWcfError = TError.RunGood.Int();
             pMsg = string.Empty;
-            #endregion
-            #region validate parameters
+        #endregion
+        #region validate parameters
             if (null == pList)
             {
                 pWcfError = TError.Post_NoParam.Int(); pMsg = "AddRowV(List<Product_WMS_Interface>, out List<Product_WMS_Interface>, out int, out string)错误，非法入参";
                 return rslt;
             }
-            #endregion
+        #endregion
             foreach (var e in pList)
             {
                 string tmpMsg = string.Empty;
@@ -976,7 +998,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
             try
             {
                 eList = new List<Product_WMS_Interface>(1);
-                #region 遍历子单据，创建并添加Product_WMS_Interface实体
+        #region 遍历子单据，创建并添加Product_WMS_Interface实体
                 foreach (var so in pOrder.SubOrders)
                 {
                     Product_WMS_Interface entity = new Product_WMS_Interface();
@@ -999,10 +1021,10 @@ namespace C_WMS.Data.Mango.MisModelPWI
                             }
                         case TCWmsOrderCategory.EExwarehouseOrder:
                             {
-                                entity.MapId1 = (pOrder.MangoOrder as MangoExwarehouseOrder).ProductOutputMainId;
-                                entity.MapId2 = (so.Value.MangoOrder as MangoSubExwarehouseOrder).ProductOutputId;
-                                entity.AddTime = (so.Value.MangoOrder as MangoSubExwarehouseOrder).AddTime;
-                                entity.AddUserid = (so.Value.MangoOrder as MangoSubExwarehouseOrder).AddUserid;
+                                entity.MapId1 = (pOrder.MangoOrder as MangoStockouOrder).ProductOutputMainId;
+                                entity.MapId2 = (so.Value.MangoOrder as MangoSubStockoutOrder).ProductOutputId;
+                                entity.AddTime = (so.Value.MangoOrder as MangoSubStockoutOrder).AddTime;
+                                entity.AddUserid = (so.Value.MangoOrder as MangoSubStockoutOrder).AddUserid;
                                 eList.Add(entity);
                                 break;
                             }
@@ -1018,7 +1040,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
                         default: { break; }
                     }
                 }
-                #endregion
+        #endregion
 
                 return eList;
             }
@@ -1096,5 +1118,6 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 return TError.WCF_RunError.Int();
             }
         }
+#endif
     }
 }

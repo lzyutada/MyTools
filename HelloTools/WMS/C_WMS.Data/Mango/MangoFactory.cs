@@ -51,7 +51,7 @@ namespace C_WMS.Data.Mango
             }
             return rsltList;
         }
-        
+
         static public int GetV_Order<T>(List<CommonFilterModel> pFilters, out T orderList, out string pErrMsg) where T : class, new()
         {
             throw new NotImplementedException(""); // TODO: 
@@ -132,7 +132,7 @@ namespace C_WMS.Data.Mango
         /// <returns></returns>
         static public TMangoOrderType To_TMangoOrderType(int pOrderType)
         {
-            switch(pOrderType)
+            switch (pOrderType)
             {
                 case 0: return TMangoOrderType.EUnknown; // 未知
                 case 1: return TMangoOrderType.EBMDD; // 部门订单
@@ -631,19 +631,19 @@ namespace C_WMS.Data.Mango
         {
             var ret = new ThirdResult<List<object>>("获取商品全部数据开始");
 
-#region temp variables definition
+        #region temp variables definition
             List<Product_ProductInfo_List> mallProductList = null;
             List<Product_ProductInfo_List_GuiGeList> ggLinkList = null;
             List<Product_ProductInfo_List_GuiGe> ggList = null;
             List<CWmsProduct> outPList = new List<CWmsProduct>(1);
-#endregion
+        #endregion
             mallProductList = GetMangoMallProductList(); // get list of all product info
             var filters = new List<CommonFilterModel>();
             filters.Add(new CommonFilterModel("ProductId", "in", mallProductList.Select(x=>x.ProductId).Cast<object>().ToList()));
             ggLinkList = GetGuiGeLinkList(filters); // get list of product_specification link
             ggList = GetGuiGeList(); // get list of specification
                         
-#region tranverse ggLinkList
+        #region tranverse ggLinkList
             foreach (var tmpGgItem in ggLinkList)
             {
                 CWmsProduct newMpItem = new CWmsProduct();
@@ -655,7 +655,7 @@ namespace C_WMS.Data.Mango
                 //newMpItem.MangoProduct.GGDict.GetSpecification();
                 outPList.Add(newMpItem);
             } // foreach (var tmpGgItem in ggLinkList)          
-#endregion/
+        #endregion/
            
             var toBeRemoveList = mallProductList.Where(
                              x => outPList.Select(
@@ -694,19 +694,19 @@ namespace C_WMS.Data.Mango
         {
             var ret = new ThirdResult<List<object>>("获取单个商品数据开始");
 
-#region temp variables definition
+        #region temp variables definition
             List<Product_ProductInfo_List> mallProductList = null;
             List<Product_ProductInfo_List_GuiGeList> ggLinkList = null;
             List<Product_ProductInfo_List_GuiGe> ggList = null;
             List<CWmsProduct> outPList = new List<CWmsProduct>(1);
-#endregion
+        #endregion
             mallProductList = GetMangoMallProductEntity(ProductID); // get list of all product info
             var filters = new List<CommonFilterModel>();
             filters.Add(new CommonFilterModel("ProductId", "=", ProductID.ToString()));
             ggLinkList = GetGuiGeLinkList(filters); // get list of product_specification link
             ggList = GetGuiGeList(); // get list of specification
 
-#region tranverse ggLinkList
+        #region tranverse ggLinkList
             foreach (var tmpGgItem in ggLinkList)
             {
                 CWmsProduct newMpItem = new CWmsProduct();
@@ -717,7 +717,7 @@ namespace C_WMS.Data.Mango
                 newMpItem.MangoProduct.GGDict.GuiGeList.AddRange(ggList.Where(x => (-1 < tmpGgItem.GuiGeIDList.IndexOf(x.GuiGeID.ToString()))).Select(y => new GuiGeProp(y.GuiGeID.ToString(), y.GuiGeName)).ToList());
                 outPList.Add(newMpItem);
             } // foreach (var tmpGgItem in ggLinkList)
-#endregion/
+        #endregion/
 
             var toBeRemoveList = mallProductList.Where(
                              x => outPList.Select(
@@ -819,6 +819,25 @@ namespace C_WMS.Data.Mango
         }
 #endif
         /// <summary>
+        /// 根据商品Id获取商城商品对象
+        /// </summary>
+        /// <param name="pId"></param>
+        /// <returns></returns>
+        static public MangoProduct GetProduct(string pId)
+        {
+            MangoProduct retObj = null;
+            using (var tmp = MisModelFactory.GetMisEntity<Product_ProductInfo_List>(pId))
+            {
+                if (null != tmp)
+                {
+                    retObj = new MangoProduct();
+                    retObj.CopyFrom(tmp);
+                }
+            }
+            return retObj;
+        }
+
+        /// <summary>
         /// 从商城中获取商品信息list。若获取成功则返回获取的商品List[MangoProduct]；否则返回Count=0的列表。
         /// public static List[MangoProduct] GetMangoMallProductList(List[CommonFilterModel], out string))
         /// </summary>
@@ -847,8 +866,9 @@ namespace C_WMS.Data.Mango
             }
             else
             {
-                var outList = wcfRslt.Data.Select(x => new MangoProduct {
-#region Copy action
+                var outList = wcfRslt.Data.Select(x => new MangoProduct
+                {
+                    #region Copy action
                     CanLingYong = x.CanLingYong,
                     AddUserid = x.AddUserid,
                     AddTime = x.AddTime,
@@ -897,14 +917,14 @@ namespace C_WMS.Data.Mango
                     DepreciationRate = x.DepreciationRate,
                     ResidualRate = x.ResidualRate,
                     MaxInventory = x.MaxInventory
-#endregion
+                    #endregion
                 }).ToList();
                 pMsg = string.Empty;
                 //ret.Append("从商城中获取商品list[{1}].Count={0}", outList.Count, outList);
                 return outList;
             }
         }
-        #if false // 由MisModel处理
+#if false // 由MisModel处理
         /// <summary>
         /// 从商城中获取商品信息list。
         /// </summary>
@@ -980,6 +1000,7 @@ namespace C_WMS.Data.Mango
             }
         }
 #endif
+#if false // 由MisModel处理
 
         /// <summary>
         /// </summary>
@@ -1003,7 +1024,6 @@ namespace C_WMS.Data.Mango
             return p;
         }
 
-        #if false // 由MisModel处理
         /// <summary>
         /// </summary>
         /// <param name="srcObj">拷贝的数据源，是MangoProduct的实例</param>
@@ -1056,7 +1076,7 @@ namespace C_WMS.Data.Mango
             return p;
         }
 #endif
-#region 生成或获取仓库
+        #region 生成或获取仓库
         /// <summary>
         /// 从芒果商城中获取指定仓库
         /// </summary>
@@ -1065,7 +1085,7 @@ namespace C_WMS.Data.Mango
         static public MangoWarehouse GetWarehouse(string id)
         {
             MangoWarehouse w = null;
-            var rslt = MangoWCF<Product_Warehouse>.GetList(new List<CommonFilterModel>() { new CommonFilterModel("WarehouseId","=", id) },new List<CommonOrderModel>());
+            var rslt = MangoWCF<Product_Warehouse>.GetList(new List<CommonFilterModel>() { new CommonFilterModel("WarehouseId", "=", id) }, new List<CommonOrderModel>());
             if (null != rslt && null != rslt.Data && 0 < rslt.Data.Count)
             {
                 w = new MangoWarehouse();
@@ -1122,40 +1142,37 @@ namespace C_WMS.Data.Mango
             ret.End();
             return outList;
         }
-#endregion
+        #endregion
 
-#region 生成或获取货主
-        /// <summary>
-        /// TODO: 根据仓库获取对应的所有货主
-        /// </summary>
-        /// <param name="pList"></param>
-        /// <returns></returns>
-        static public Dictionary<string, WmsOwner> GetVOwners(List<MangoWarehouse> pList)
-        {
-            Dictionary<string, WmsOwner> outList = new Dictionary<string, WmsOwner>(1);
-            if (null == pList)
-                return outList;
+        #region 生成或获取货主
+        ///// <summary>
+        ///// TODO: 根据仓库获取对应的所有货主
+        ///// </summary>
+        ///// <param name="pList"></param>
+        ///// <returns></returns>
+        //static public Dictionary<string, WmsOwner> GetV_Owners(List<MangoWarehouse> pList)
+        //{
+        //    Dictionary<string, WmsOwner> outList = new Dictionary<string, WmsOwner>(1);
+        //    if (null == pList)
+        //        return outList;
 
-            try
-            {
-                foreach (var w in pList)
-                {
-                    var o = GetOwner(w.WarehouseId.ToString());
-                    if (null != o && !outList.Keys.Contains(o.WmsID))
-                        outList.Add(o.WmsID, o);
-                } //foreach (var w in pList)
-            }
-            catch (Exception ex)
-            {
-                outList.Clear();
+        //    try
+        //    {
+        //        foreach (var w in pList)
+        //        {
+        //            var o = GetOwner(w.WarehouseId.ToString());
+        //            if (null != o && !outList.Keys.Contains(o.WmsID))
+        //                outList.Add(o.WmsID, o);
+        //        } //foreach (var w in pList)
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        outList.Clear();
+        //        C_WMS.Data.Utility.MyLog.Instance.Warning(ex, "MangoFactory.GetV_Owners()发生异常");
+        //    }
 
-                // for debug
-                if (null != ex.InnerException)C_WMS.Data.Utility.MyLog.Instance.Error("InnerException: {0}", ex.InnerException.Message);
-               C_WMS.Data.Utility.MyLog.Instance.Error("发生异常: {0}\r\n调用堆栈：{1}", ex.Message, ex.StackTrace);
-            }
-
-            return outList;
-        }
+        //    return outList;
+        //}
 
 #if false // 由WMS模块处理
         /// <summary>
@@ -1178,20 +1195,20 @@ namespace C_WMS.Data.Mango
 
             switch (w.CompanyTypeId)
             {
-#region 网络仓库
+        #region 网络仓库
                 case 1: // TODO: 用const代替
                     {
                         o = new WmsOwner(CWmsConsts.cStrWmsOwnerCode_MGWL, CWmsConsts.cStrWmsOwnerName_MGWL);
                         break;
                     }
-#endregion
-#region 蓝江仓库
+        #endregion
+        #region 蓝江仓库
                 case 9: // TODO: 用const代替
                     {
                         o = new WmsOwner(CWmsConsts.cStrWmsOwnerCode_LJZJ, CWmsConsts.cStrWmsOwnerName_LJZJ);
                         break;
                     }
-#endregion
+        #endregion
                 default: break;
             } // switch (w.WarehouseId.ToString())
             return o;
@@ -1210,7 +1227,7 @@ namespace C_WMS.Data.Mango
             return owner;
         }
 #endif
-#endregion
+        #endregion
     }
     
     /// <summary>
@@ -1224,7 +1241,7 @@ namespace C_WMS.Data.Mango
         /// 取得数据
         /// </summary>
         public static IStoreCache<Product_ProductCategory> ProductCategory_Cache_Store => _ProductCategory_Cache_Store != null ? _ProductCategory_Cache_Store : (_ProductCategory_Cache_Store =
-            SimpleStore.Memory<Product_ProductCategory>("ProductCategoryId", () =>
+            SimpleStore.Memory("ProductCategoryId", () =>
             {
                 var wcfProductCategoryRet = WCF<Product_ProductCategory>.QueryAll(
                     new List<CommonFilterModel>(){

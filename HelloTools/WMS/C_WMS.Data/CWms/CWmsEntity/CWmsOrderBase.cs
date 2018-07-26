@@ -52,6 +52,11 @@ namespace C_WMS.Data.CWms.CWmsEntity
         /// 获取子单据列表。
         /// </summary>
         public Dictionary<string, TSubOrderType> SubOrders { get; protected set; }
+
+        /// <summary>
+        /// MapClassId of this
+        /// </summary>
+        virtual public TDict709_Value MapClassId { get; protected set; }
         #endregion
 
         /// <summary>
@@ -79,6 +84,9 @@ namespace C_WMS.Data.CWms.CWmsEntity
     /// </summary>
     abstract class CWmsOrderBaseHandlerBase<TOrderType, TMangoType, TWmsType, TSubOrderType, THandlerType> : IDisposable // where TOrderType : class, new()
     {
+        /// <summary>
+        /// Array of WaitHandle for async operations on WCF.
+        /// </summary>
         protected AutoResetEvent[] AreArray = null;
 
         /// <summary>
@@ -90,16 +98,18 @@ namespace C_WMS.Data.CWms.CWmsEntity
         /// <returns></returns>
         protected delegate int DefDlgt_RunWCF<TEntity>(Mango.TWCFOperation pOperation, params object[] args);
 
+        /// <summary>
+        /// default constructor
+        /// </summary>
         protected CWmsOrderBaseHandlerBase()
         {
             //_ares = new List<AutoResetEvent>(5);
         }
+
         public void Dispose()
         {
             if (null != AreArray) Array.Clear(AreArray, 0, AreArray.Length);
         }
-
-
 
         public virtual CWmsWarehouse GetWarehouse(CWmsOrderBase<TOrderType, TMangoType, TWmsType, TSubOrderType, THandlerType> pOrder)
         {
@@ -222,7 +232,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
                 0,  // 0st
                 pAddOnNotFound, // 1st
                 new DefDlgt_RunWCF<Product_WMS_Interface>(DlgtFunc_RunWCF<Product_WMS_Interface>), // 2nd
-                MangoFactory.GetV_PwiList(Get709MapClassId(), pOrder.Id, pOrder.SubOrders.Keys),//GetPwiListFromOrder(pOrder), // 3rd
+                MangoFactory.GetV_PwiList(pOrder.MapClassId, pOrder.Id, pOrder.SubOrders.Keys), // 3rd
                 pOrder.Id,  // 4th
                 pIsUpdateOk,    // 5th
                 pIsDel  // 6th
@@ -233,8 +243,9 @@ namespace C_WMS.Data.CWms.CWmsEntity
             WaitHandle.WaitAll(AreArray);
             return -1;
         }
-        //abstract protected List<Product_WMS_Interface> GetPwiListFromOrder(object pOrder);
+
         abstract protected int Update709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg);
+
         abstract protected int UpdateA709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg);
     } // class CWmsOrderBaseHandlerBase
 }

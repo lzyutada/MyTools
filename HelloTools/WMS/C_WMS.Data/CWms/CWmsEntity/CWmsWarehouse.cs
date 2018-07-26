@@ -1,4 +1,5 @@
 ﻿using C_WMS.Data.Mango.Data;
+using C_WMS.Data.Mango.MisModelPWI;
 using C_WMS.Interface.CWms.CWmsEntity;
 using MangoMis.Frame.Helper;
 using System;
@@ -13,17 +14,26 @@ namespace C_WMS.Data.CWms.CWmsEntity
     /// </summary>
     class CWmsWarehouse : CWmsEntityBase
     {
-        CWmsWarehouseHandler _handler = new CWmsWarehouseHandler();
-
         /// <summary>
         /// get entity of warehouse in Mis
         /// </summary>
         public MangoWarehouse Mango { get; protected set; }
 
         /// <summary>
-        /// 
+        /// return name/code of warehouse according to configuration in SystemParam.
         /// </summary>
-        public string WarehouseCode { get { return _handler.GetWarehouseCode(this); }
+        public string WmsCode
+        {
+            get
+            {
+                CWmsSystemParam_CustomerOwnerWarehouses warehouse = null;
+                foreach (var owner in CWmsMisSystemParamCache.Cache.CustomerId.Owners)
+                {
+                    warehouse = owner.Warehouses.Find(w => w.Code.Equals(Mango?.WarehouseId.ToString()));
+                    if (null != warehouse) break;
+                }
+                return warehouse?.Name;
+            }
         }
 
         /// <summary>
@@ -39,15 +49,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
 
         public override void Dispose()
         {
-            // do nothing
-        }
-    }
-
-    class CWmsWarehouseHandler
-    {
-        public string GetWarehouseCode(CWmsWarehouse pWarehouse)
-        {
-
+            if (null != Mango) Mango.Dispose();
         }
     }
 }

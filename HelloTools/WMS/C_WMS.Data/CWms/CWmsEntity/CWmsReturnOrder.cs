@@ -67,12 +67,12 @@ namespace C_WMS.Data.CWms.CWmsEntity
 
         override protected int Update709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg)
         {
-            return Dict709Handle.UpdateRow_Order(TDict709_Value.EReturnOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
+            return Dict709Handle.UpdateRow(TDict709_Value.EReturnOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
         }
 
         override protected int UpdateA709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg)
         {
-            return Dict709Handle.UpdateRowA_Order(TDict709_Value.EReturnOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
+            return Dict709Handle.UpdateRowA(TDict709_Value.EReturnOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
         }
 
         /// <summary>

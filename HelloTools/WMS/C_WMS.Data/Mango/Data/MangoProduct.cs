@@ -16,10 +16,8 @@ namespace C_WMS.Data.Mango.Data
     /// </summary>
     public class GuiGeProp
     {
-#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
         public string id = string.Empty;
         public string Description = string.Empty;
-#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GuiGeProp"/> class.
@@ -77,17 +75,30 @@ namespace C_WMS.Data.Mango.Data
     public class MangoProduct : Product_ProductInfo_List
     {
         /// <summary>
+        /// 设置商品Id，同时更新其他商品信息
+        /// </summary>
+        virtual public string Id
+        {
+            get { return ProductId.ToString(); }
+            set
+            {
+                int idInt = 0;
+                if (int.TryParse(value, out idInt))
+                    Copy(MangoFactory.GetProduct(value));
+            }
+        }
+
+        /// <summary>
         /// 商品规格
         /// </summary>
-        public GuiGeDict GGDict { get { return mGuiGe; } }
-        private GuiGeDict mGuiGe = null;
+        public GuiGeDict GGDict { get; protected set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MangoProduct"/> class.
         /// </summary>
         public MangoProduct()
         {
-            mGuiGe = new GuiGeDict();
+            GGDict = null;
         }
 
         /// <summary>
@@ -103,58 +114,8 @@ namespace C_WMS.Data.Mango.Data
         /// </remarks>
         public void Copy(MangoProduct mp)
         {
-            if (null == mp) return;
-            #region Copy
-            CanLingYong = mp.CanLingYong;
-            AddUserid = mp.AddUserid;
-            AddTime = mp.AddTime;
-            IsDel = mp.IsDel;
-            UpdateTime = mp.UpdateTime;
-            UpdateUserID = mp.UpdateUserID;
-            KuCunCount = mp.KuCunCount;
-            TotalCount = mp.TotalCount;
-            SerialId = mp.SerialId;
-            isParent = mp.isParent;
-            isPeiSongTime = mp.isPeiSongTime;
-            WuPinMoney = mp.WuPinMoney;
-            ZhiBaotime = mp.ZhiBaotime;
-            isSupplierPeiSong = mp.isSupplierPeiSong;
-            IsSale = mp.IsSale;
-            isTanXiao = mp.isTanXiao;
-            isPoint = mp.isPoint;
-            xianZhiOrgs = mp.xianZhiOrgs;
-            XianZhiType = mp.XianZhiType;
-            CaiGoPrice = mp.CaiGoPrice;
-            YWY_Dingdan_type_2L = mp.YWY_Dingdan_type_2L;
-            YWY_Dingdan_type_3L = mp.YWY_Dingdan_type_3L;
-            DisOrder = mp.DisOrder;
-            LuRuState = mp.LuRuState;
-            JDProudctID = mp.JDProudctID;
-            OrgID = mp.OrgID;
-            ProductId = mp.ProductId;
-            Title = mp.Title;
-            BianMa = mp.BianMa;
-            ProductTypeId = mp.ProductTypeId;
-            ProductCategoryIdBig = mp.ProductCategoryIdBig;
-            ProductLevel = mp.ProductLevel;
-            ProductCategoryId = mp.ProductCategoryId;//。。
-            Brands = mp.Brands;
-            Model = mp.Model;
-            isJD = mp.isJD;
-            MiniInventory = mp.MiniInventory;
-            InquiryCycle = mp.InquiryCycle;
-            ProductImage = mp.ProductImage;
-            Remark = mp.Remark;
-            Unit = mp.Unit;
-            GuiGe = mp.GuiGe;
-            PriceLow = mp.PriceLow;
-            PriceMax = mp.PriceMax;
-            PriceAve = mp.PriceAve;
-            DepreciationRate = mp.DepreciationRate;
-            ResidualRate = mp.ResidualRate;
-            MaxInventory = mp.MaxInventory;
-            if (null != mp.GGDict) mGuiGe = mp.GGDict;
-            #endregion
+            CopyFrom(mp);
+            if (null != mp?.GGDict) GGDict = mp.GGDict;
         }
 
         /// <summary>
@@ -216,23 +177,6 @@ namespace C_WMS.Data.Mango.Data
             ResidualRate = pSrc.ResidualRate; // ret.Append("ResidualRate={0}", ResidualRate);
             MaxInventory = pSrc.MaxInventory; // ret.Append("MaxInventory={0}", MaxInventory);
             #endregion
-        }
-
-        /// <summary>
-        /// 设置商品Id，同时更新其他商品信息
-        /// </summary>
-        /// <param name="pPid"></param>
-        public void SetId(string pPid)
-        {
-            List<Product_ProductInfo_List> tmpList = MangoFactory.GetMangoMallProductEntity(pPid.Int());
-            if (null == tmpList || 0 >= tmpList.Count)
-            {
-                return;
-            }
-            else
-            {
-                CopyFrom(tmpList[0]);
-            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace C_WMS.Data.Mango.Data
     /// <summary>
     /// 芒果商城中的数据实体类
     /// </summary>
-    class MangoEntityBase : TT.Common.Frame.Model.EntityBase
+    class MangoEntityBase : TT.Common.Frame.Model.EntityBase, IDisposable
     {
     }
 

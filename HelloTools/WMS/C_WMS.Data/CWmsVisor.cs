@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using C_WMS.Interface.CWms.Interfaces.Data;
-using C_WMS.Data.CWms.Interfaces.Methods;
-using MangoMis.Frame.ThirdFrame;
+using C_WMS.Data.Wms.Transaction;
+using C_WMS.Data.Wms.Data;
 using MangoMis.MisFrame.Frame;
 using C_WMS.Interface;
 
@@ -31,7 +31,7 @@ namespace C_WMS.Data
         public void SingleItemSync(int pId, out HttpRespXmlBase pRespXmlObj)
         {
             C_WMS.Data.Utility.MyLog.Instance.Info("同步单个商品{0}，开始", pId);
-            CWmsMethod_ItemsSync trans = new CWmsMethod_ItemsSync();
+            var trans = new CWmsTransactionItemSync();
             pRespXmlObj = trans.DoTransaction(pId);
             C_WMS.Data.Utility.MyLog.Instance.Info("同步单个商品{0}，结束。返回：{1}", pId, pRespXmlObj);
         }
@@ -44,7 +44,7 @@ namespace C_WMS.Data
         public void ItemsSync(out HttpRespXmlBase pRespXmlObj)
         {
             C_WMS.Data.Utility.MyLog.Instance.Info("[弃用的]批量同步商品（同步操作），开始");
-            CWmsMethod_ItemsSync trans = new CWmsMethod_ItemsSync();
+            var trans = new CWmsTransactionItemSync();
             pRespXmlObj = trans.DoTransaction();
         }
 
@@ -55,7 +55,7 @@ namespace C_WMS.Data
         public void ItemsSyncAsync(out int pError)
         {
             C_WMS.Data.Utility.MyLog.Instance.Info("批量同步商品（异步操作），开始");
-            CWmsMethod_ItemsSync trans = new CWmsMethod_ItemsSync();
+            var trans = new CWmsTransactionItemSync();
             pError = trans.Activate();
             C_WMS.Data.Utility.MyLog.Instance.Info("批量同步商品（异步操作）结束。启动异步计时器结果{0}", pError);
         }
@@ -64,15 +64,18 @@ namespace C_WMS.Data
         /// 同步创建商品退货单。返回WMS系统响应的XML内容反序列化后的实体， 若执行失败则返回null
         /// </summary>
         /// <param name="pReturnOrderId">主退货订单Id</param>
-        /// <param name="pRespXmlObj">返回WMS系统响应的XML内容反序列化后的实体， 若执行失败则返回null</param>的主退货单ID</param>    
+        /// <param name="pRespXmlObj">返回WMS系统响应的XML内容反序列化后的实体， 若执行失败则返回null</param>    
         /// <returns></returns>
         public void ReturnOrderCreate(string pReturnOrderId, out HttpRespXmlBase pRespXmlObj)
         {
             C_WMS.Data.Utility.MyLog.Instance.Info("同步创建商品退货单{0}，开始", pReturnOrderId);
             string msg = string.Empty;
-            CWmsPostTransactionBase trans = null;
-            trans = new CWmsReturnOrderCreate();
-            trans.DoTransaction(out pRespXmlObj, out msg, pReturnOrderId, "");
+            HttpRespXml_ReturnOrderCreate tmpResp = null;
+            using (var trans = new CWmsReturnOrderCreate())
+            {
+                trans.DoTransaction(out tmpResp, out msg, pReturnOrderId);
+                pRespXmlObj = tmpResp;
+            }
             C_WMS.Data.Utility.MyLog.Instance.Info("同步创建商品退货单{0}，结束。返回: \r\nRESPONSE={1}\r\nerrMsg={2}", pReturnOrderId, pRespXmlObj, msg);
         }
 
@@ -84,9 +87,10 @@ namespace C_WMS.Data
         public void StockoutOrderCreate(string pStockoutId, out HttpRespXmlBase pRespXmlObj)
         {
             C_WMS.Data.Utility.MyLog.Instance.Info("同步创建商品出库单{0}，开始", pStockoutId);
-            CWmsPostTransactionBase trans = null;
-            trans = new CWmsStockoutCreate();
-            pRespXmlObj = (trans as CWmsStockoutCreate).DoTransaction(pStockoutId);
+            using (var trans = new CWmsStockoutCreate())
+            {
+                pRespXmlObj = trans.DoTransaction(pStockoutId);
+            }
             C_WMS.Data.Utility.MyLog.Instance.Info("同步创建商品出库单{0}，结束。返回: \r\nRESPONSE={1}", pStockoutId, pRespXmlObj);
         }
 
@@ -99,9 +103,12 @@ namespace C_WMS.Data
         {
             C_WMS.Data.Utility.MyLog.Instance.Info("同步创建商品入库单{0}，开始", pEntryOrderId);
             string msg = string.Empty;
-            CWmsPostTransactionBase trans = null;
-            trans = new CWmsEntryOrderCreate();
-            (trans as CWmsEntryOrderCreate).DoTransaction(out pRespXmlObj, out msg, pEntryOrderId, "");
+            HttpRespXml_EntryOrderCreate tmpResp = null;
+            using (var trans = new CWmsEntryOrderCreate())
+            {
+                trans.DoTransaction(out tmpResp, out msg, pEntryOrderId, "");
+                pRespXmlObj = tmpResp;
+            }
             C_WMS.Data.Utility.MyLog.Instance.Info("同步创建商品入库单{0}，结束。返回: \r\nRESPONSE={1}\r\nerrMsg={2}", pEntryOrderId, pRespXmlObj, msg);
         }
 
@@ -112,8 +119,10 @@ namespace C_WMS.Data
         public void OrdersSyncAsync_EntryOrder(out int pError)
         {
             C_WMS.Data.Utility.MyLog.Instance.Info("批量同步采购入库单（异步操作），开始");
-            CWmsOrdersSync_EntryOrder trans = new CWmsOrdersSync_EntryOrder();
-            pError = trans.Activate();
+            using (var trans = new CWmsOrdersSync_EntryOrder())
+            {
+                pError = trans.Activate();
+            }
             C_WMS.Data.Utility.MyLog.Instance.Info("批量同步采购入库单（异步操作）结束。启动异步计时器结果{0}", pError);
         }
 
@@ -124,8 +133,10 @@ namespace C_WMS.Data
         public void OrdersSyncAsync_StockoutOrder(out int pError)
         {
             C_WMS.Data.Utility.MyLog.Instance.Info("批量同步出库单（异步操作），开始");
-            CWmsOrdersSync_StockoutOrder trans = new CWmsOrdersSync_StockoutOrder();
-            pError = trans.Activate();
+            using (var trans = new CWmsOrdersSync_StockoutOrder())
+            {
+                pError = trans.Activate();
+            }
             C_WMS.Data.Utility.MyLog.Instance.Info("批量同步出库单（异步操作）结束。启动异步计时器结果{0}", pError);
         }
 #endregion

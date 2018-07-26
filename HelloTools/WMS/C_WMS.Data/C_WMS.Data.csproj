@@ -107,8 +107,8 @@
     <Compile Include="CWmsVisor.cs" />
     <Compile Include="CWms\CWmsDataFactory.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsEntryOrder.cs" />
-    <Compile Include="CWms\CWmsEntity\CWmsExWarehouseOrder.cs" />
-    <Compile Include="CWms\CWmsEntity\CWmsExWarehouseSubOrder.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsStockOrder.cs" />
+    <Compile Include="CWms\CWmsEntity\CWmsSubStockoutOrder.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsOrderBase.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsOwner.cs" />
     <Compile Include="CWms\CWmsEntity\CWmsProduct.cs" />
@@ -137,8 +137,12 @@
     <Compile Include="Wms\Transaction\CWmsEntryOrderCreate.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Wms\Transaction\CWmsInventory_Monitoring.cs" />
-    <Compile Include="Wms\Transaction\CWmsMethod_ItemsSync.cs" />
+    <Compile Include="Wms\Transaction\CWmsInventory_Monitoring.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Wms\Transaction\CWmsMethod_ItemsSync.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Wms\Transaction\CWmsOrderCancel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -157,19 +161,16 @@
     <Compile Include="Wms\Transaction\CWmsStockoutCreate.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CWms\Interfaces\Methods\ICWmsInventory_Monitoring_Impl.cs" />
     <Compile Include="CWms\Interfaces\Methods\IMWmsTransactionImpl.cs" />
     <Compile Include="CWms\Interfaces\Methods\IMWmsTransaction.cs" />
     <Compile Include="Mango\Data\MangoEntityBase.cs" />
     <Compile Include="Mango\Data\MangoEntryOrder.cs" />
-    <Compile Include="Mango\Data\MangoExwarehouseOrder.cs" />
-    <Compile Include="Mango\Data\MangoMallOrder.cs" />
+    <Compile Include="Mango\Data\MangoStockouOrder.cs" />
     <Compile Include="Mango\Data\MangoOrderBase.cs" />
     <Compile Include="Mango\Data\MangoProduct.cs" />
-    <Compile Include="Mango\Data\MangoPurchaseOrder.cs" />
     <Compile Include="Mango\Data\MangoReturnOrder.cs" />
     <Compile Include="Mango\Data\MangoSubEntryOrder.cs" />
-    <Compile Include="Mango\Data\MangoSubExwarehouseOrder.cs" />
+    <Compile Include="Mango\Data\MangoSubStockoutOrder.cs" />
     <Compile Include="Mango\Data\MangoSubPurchaseOrder.cs" />
     <Compile Include="Mango\Data\MangoSubReturnOrder.cs" />
     <Compile Include="Mango\Data\MangoWarehouse.cs" />

@@ -29,7 +29,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
             set
             {
                 mItemCode = value;  // set itemCode
-                MangoProduct.SetId(CWmsProductHandler.GetItemIdFromCode(value));
+                MangoProduct.Id = CWmsProductHandler.GetItemIdFromCode(value);
             }
         }
         private string mItemCode = string.Empty;

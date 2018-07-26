@@ -72,21 +72,21 @@ namespace C_WMS.Data.Utility
         /// <summary>
         /// 激活计时器，启动异步通讯。若操作成功则返回TError.RunGood；否则返回其他值
         /// </summary>
+        /// <param name="args"></param>
         /// <returns>若操作成功则返回TError.RunGood；否则返回其他值</returns>
-        virtual public int Activate()
+        virtual public int Activate(params object[] args)
         {
-            int err = TError.RunGood.Int();
             try
             {
                 Elapsed += RunL;
                 StartTimer();
+                return TError.RunGood.Int();
             }
             catch(Exception ex)
             {
                 C_WMS.Data.Utility.MyLog.Instance.Fatal(ex, "{0}激活计时器异常", System.Reflection.MethodBase.GetCurrentMethod().Name);
-                err = TError.WCF_RunError.Int();
+                return TError.WCF_RunError.Int();
             }
-            return err;
         }
 
         /// <summary>

@@ -54,7 +54,9 @@ namespace C_WMS.Data.Mango.MisModelPWI
         public pub_SystemParam SignMethod { get; private set; }
         public pub_SystemParam ApiMethod_ItemsSync { get; private set; }
         public pub_SystemParam ApiMethod_InventoryMonitoring { get; private set; }
-        public pub_SystemParam ApiMethod_ItemSync { get; private set; }
+        public pub_SystemParam ApiMethod_EntryOrderCreate { get; private set; }
+        public pub_SystemParam ApiMethod_StockoutOrderCreate { get; private set; }
+        public pub_SystemParam ApiMethod_ReturnOrderCreate { get; private set; }
         protected pub_SystemParam SysParamCustomerId { get; private set; }
         protected pub_SystemParam SysParamLogistics { get; private set; }
         public CWmsSystemParam_Customer CustomerId { get; private set; }
