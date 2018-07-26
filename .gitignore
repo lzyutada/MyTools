@@ -262,4 +262,5 @@ __pycache__/
 /.gitignore
 /.gitattributes
 *.gitattributes
-/HelloTools/WMS
+/HelloTools/WMS/WMS.7z
+/HelloTools/WMS/C_WMS.Interface
