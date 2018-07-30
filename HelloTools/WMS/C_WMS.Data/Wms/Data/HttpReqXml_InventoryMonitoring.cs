@@ -16,14 +16,14 @@ namespace C_WMS.Data.Wms.Data
         /// 
         /// </summary>
         [XmlArray("inventoryMonitoringList"), XmlArrayItem("inventoryMonitoring")]
-        public List<HttpReqXml_InventoryMonitoring_item> inventoryMonitoringList;
+        public List<HttpReqXml_InventoryMonitoring_item> items;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpReqXml_InventoryMonitoring"/> class.
         /// </summary>
         public HttpReqXml_InventoryMonitoring()
         {
-            inventoryMonitoringList = new List<HttpReqXml_InventoryMonitoring_item>(1);
+            items = new List<HttpReqXml_InventoryMonitoring_item>(1);
         }
 
 

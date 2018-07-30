@@ -9,7 +9,7 @@ namespace C_WMS.Data.Mango.Data
     /// <summary>
     /// 芒果商城中的出库订单（通过购物车结算购买）
     /// </summary>
-    public class MangoStockouOrder : Product_Warehouse_ProductMainOutput
+    public class MangoStockouOrder : Product_Warehouse_ProductMainOutput, IMangoOrderBase
     {
         /// <summary>
         /// Default constructor
@@ -18,16 +18,22 @@ namespace C_WMS.Data.Mango.Data
         {
         }
 
+            /// <summary>
+            /// constructd by order id
+            /// </summary>
+            /// <param name="id"></param>
+        public MangoStockouOrder(string id)
+        {
+            Copy(MangoFactory.NewOrder<Product_Warehouse_ProductMainOutput>(id));
+        }
+
         /// <summary>
         /// 构造函数，通过srcObj创建和构造实例
         /// </summary>
         /// <param name="srcObj">源订单实例</param>
         public MangoStockouOrder(Product_Warehouse_ProductMainOutput srcObj)
         {
-            if (null == srcObj)
-                return;
-
-            CopyFrom(srcObj);
+            Copy(srcObj);
         }
 
         /// <summary>
@@ -35,7 +41,7 @@ namespace C_WMS.Data.Mango.Data
         /// </summary>
         /// <param name="srcObj">源实例</param>
         /// <returns>若成功则返回string.Empty；否则返回错误描述</returns>
-        public string CopyFrom(Product_Warehouse_ProductMainOutput srcObj)
+        public string Copy(Product_Warehouse_ProductMainOutput srcObj)
         {
             if (null != srcObj)
             {
@@ -59,8 +65,26 @@ namespace C_WMS.Data.Mango.Data
             }
             else
             {
-                return "源实例srcObj为null。";
+                string errMsg = string.Format("MangoStockouOrder.Copy(), invalid null input param.");
+                C_WMS.Data.Utility.MyLog.Instance.Warning(errMsg);
+                return errMsg;
             }
+        }
+
+
+        /// <summary>
+        /// IMangoOrderBase.GetId(), return id of order
+        /// </summary>
+        /// <returns></returns>
+        public string GetId() { return ProductOutputMainId.ToString(); }
+
+        /// <summary>
+        /// overrided ToString()
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("{0}[{1}]", GetType(), ProductOutputMainId);
         }
     }
 }

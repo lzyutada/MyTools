@@ -51,5 +51,10 @@ namespace C_WMS.Data.CWms.CWmsEntity
         {
             if (null != Mango) Mango.Dispose();
         }
+
+        public override string ToString()
+        {
+            return string.Format("[ID:{0}, Name:{1}, CompanyType:{2}]-[{3}]", Mango?.WarehouseId, Mango?.WarehouseName, Mango?.CompanyTypeId, WmsCode);
+        }
     }
 }

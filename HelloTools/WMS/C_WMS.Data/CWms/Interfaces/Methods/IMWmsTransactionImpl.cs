@@ -12,16 +12,6 @@ namespace C_WMS.Data.CWms.Interfaces.Methods
     /// <typeparam name="TResponse"></typeparam>
     interface IMWmsTransactionImpl<TRequest, TResponse> : IDisposable, IMWmsAsyncTransactionImpl
     {
-        ///// <summary>
-        ///// 获取和设置同步通讯的Request数据
-        ///// </summary>
-        //TRequest RequestObject { get; set; }
-
-        ///// <summary>
-        ///// 获取和设置同步通讯的Response数据
-        ///// </summary>
-        //TResponse ResponseObject { get; set; }
-
         /// <summary>
         /// 判断是否从WMS系统响应同步成功
         /// </summary>

@@ -17,13 +17,14 @@ namespace C_WMS.Data.Wms.Transaction
     class CWmsTransactionParams : MWmsTransactionParamsBase<CWmsTransactionParams>
     {
         /// <summary>
-        /// HTTP Transaction中的Host URI
+        /// Request URI
         /// </summary>
-        override public string RequestUri { get { return string.Empty; } }
+        public string RequestUri { get { return string.Empty; } }
+
         /// <summary>
         /// 密钥
         /// </summary>
-        protected string SecretKey = null;// SystemParamStore.FindParam("MgMall", "secret")?.PValue ?? ""; // "RA8wjgCNocNo99IAd5wFFW93Wll1TuRC"; // 
+        protected string SecretKey = null;
         /// <summary>
         /// The request XML
         /// </summary>
@@ -44,6 +45,14 @@ namespace C_WMS.Data.Wms.Transaction
 
     class CWmsTransactionImplBase<TRequest, TResponse> : MWmsTransactionImplBase<TRequest, TResponse, CWmsTransactionParams>
     {
+        /// <summary>
+        /// Do POST transaction with HTTP request. return TError.RunGood if transaction is success,
+        /// otherwise return others.
+        /// </summary>
+        /// <param name="pRequest">request object</param>
+        /// <param name="pResp">return with response data from WMS service.</param>
+        /// <param name="pMsg">return error message.</param>
+        /// <returns></returns>
         protected override int Post(TRequest pRequest, out byte[] pResp, out string pMsg)
         {
             try
@@ -57,7 +66,7 @@ namespace C_WMS.Data.Wms.Transaction
             catch (Exception ex)
             {
                 pResp = null;
-                pMsg = string.Format("在{0}<{1}>.Post()中发生异常", MethodBase.GetCurrentMethod().DeclaringType.Name, GetType());
+                pMsg = string.Format("在<{0}>.Post()中发生异常", GetType());
                 C_WMS.Data.Utility.MyLog.Instance.Error(ex, pMsg);
                 return TError.Post_NoChange.Int();
             }

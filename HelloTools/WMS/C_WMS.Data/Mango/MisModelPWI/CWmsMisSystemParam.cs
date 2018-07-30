@@ -15,6 +15,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
     class CWmsMisSystemParamKeys
     {
         public const string cStrParamClassName = "MgMall";
+        public const string cStrEnableDebug = "Debug";
         public const string cStrEnableCWMS = "EnableCWMS";
         public const string cStrCWMSOfflineHostUri = "CWMSOfflineHostUri";
         public const string cStrCWMSHostUri = "CWMSHostUri";
@@ -25,11 +26,10 @@ namespace C_WMS.Data.Mango.MisModelPWI
         public const string cStrSignMethod = "sign_method";
         public const string cStrCustomerId = "customerid";
         public const string cStrLogisticsId = "logistics";
-        #region name of API methods
         public const string cStrApiMethod_ItemsSync = "ApiMethod_ItemsSync";
         public const string cStrApiMethod_InventoryMonitoring = "ApiMethod_InventoryMonitoring";
-        #endregion
-        public const int cIntIsDefault = 0;
+        public const string cStrIsDefault = "0";
+        public const string cStrIsEnabled = "1";
     }
 
     /// <summary>
@@ -44,6 +44,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
         static CWmsMisSystemParamCache _cache = null;
 
         #region Properties of params
+        public pub_SystemParam EnableDebug { get; private set; }    // TODO: get value
         public pub_SystemParam EnableCWms { get; private set; }
         public pub_SystemParam CWMSOfflineHostUri { get; private set; }
         public pub_SystemParam CWMSHostUri { get; private set; }
@@ -143,7 +144,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
             }
             else
             {
-                try { return CustomerId.Owners.First(o => CWmsMisSystemParamKeys.cIntIsDefault == o.IsDefault.Int()); }
+                try { return CustomerId.Owners.First(o => CWmsMisSystemParamKeys.cStrIsDefault == o.IsDefault); }
                 catch (Exception ex)
                 {
                     foreach (var o in CustomerId.Owners)
@@ -180,7 +181,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
                 if (null != rslt) { return rslt; } // one logistics has been founded.
 
                 // user hasn't been found in MSP, return the default 
-                rslt = Logistics?.Logisticses.Find(l => CWmsMisSystemParamKeys.cIntIsDefault.ToString().Equals(l.IsDefault));
+                rslt = Logistics?.Logisticses.Find(l => CWmsMisSystemParamKeys.cStrIsDefault.Equals(l.IsDefault));
 
                 if (null != rslt)
                 {
@@ -208,7 +209,7 @@ namespace C_WMS.Data.Mango.MisModelPWI
         {
             try
             {
-                var rslt = Logistics.Logisticses.Find(x => CWmsMisSystemParamKeys.cIntIsDefault.ToString().Equals(x.IsDefault));
+                var rslt = Logistics.Logisticses.Find(x => CWmsMisSystemParamKeys.cStrIsDefault.Equals(x.IsDefault));
                 if (null == rslt)
                 {
                     C_WMS.Data.Utility.MyLog.Instance.Warning("Failed in finding default logistics, return null.\r\n Logistics={0}, Logistics.Logisticses.Count={1}", Logistics, Logistics?.Logisticses.Count);

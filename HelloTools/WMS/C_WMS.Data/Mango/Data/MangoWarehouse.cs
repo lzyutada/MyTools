@@ -22,8 +22,17 @@ namespace C_WMS.Data.Mango.Data
         /// <param name="wid"></param>
         public MangoWarehouse(string wid)
         {
-            int tmpId = -1;
-            WarehouseId = (int.TryParse(wid, out tmpId)) ? tmpId : -1;
+            var tmp = MangoFactory.GetWarehouse(wid);
+            if (null != tmp)
+            {
+                WarehouseId = tmp.WarehouseId;
+                WarehouseName = tmp.WarehouseName;
+                CompanyTypeId = tmp.CompanyTypeId;
+            }
+            else
+            {
+                C_WMS.Data.Utility.MyLog.Instance.Warning("MangoWarehouse._ctor({0}), failed in retrieving entity of Product_Warehouse", wid);
+            }
         }
     }
 }

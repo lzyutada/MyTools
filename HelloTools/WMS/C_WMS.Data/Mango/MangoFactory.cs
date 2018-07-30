@@ -56,6 +56,18 @@ namespace C_WMS.Data.Mango
         {
             throw new NotImplementedException(""); // TODO: 
         }
+
+        /// <summary>
+        /// <para>create and return a new object of TEntity by the indicated id of order.</para>
+        /// <para>return the new created object of TEntity; return null if failed.</para>
+        /// </summary>
+        /// <typeparam name="TEntity">class type of order</typeparam>
+        /// <param name="id">order id</param>
+        /// <returns>return the new created object of TEntity; return null if failed.</returns>
+        static public TEntity NewOrder<TEntity>(string id)
+        {
+            throw new NotImplementedException();
+        }
 #else
         static public List<Product_WMS_Interface> GetPwiListFromSubEntryOrders(CWmsEntryOrder pOrder)
         {

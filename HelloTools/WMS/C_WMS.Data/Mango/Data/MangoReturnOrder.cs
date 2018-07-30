@@ -7,18 +7,8 @@ namespace C_WMS.Data.Mango.Data
     /// <summary>
     /// 芒果商城中的主退货单
     /// </summary>
-    public class MangoReturnOrder : Product_TuiHuo_main
+    public class MangoReturnOrder : Product_TuiHuo_main, IMangoOrderBase
     {
-        #region Properties
-        //public CWmsExWarehouseOrder orgExwarehouseOrder;
-        //public int logistics;
-        //public CWmsAgentBase sender;
-        //public string reason;
-        //public string remark;
-        //public TMangoReturnType returnType = TMangoReturnType.EDefaultType;
-        //public TMangoReturnLogisticsType logisticsType = TMangoReturnLogisticsType.EDefaultType;
-        #endregion
-
         /// <summary>
         /// default constructor
         /// </summary>
@@ -27,12 +17,21 @@ namespace C_WMS.Data.Mango.Data
         }
 
         /// <summary>
+        /// constructed by pRid
+        /// </summary>
+        /// <param name="pRid">order ID</param>
+        public MangoReturnOrder(string pRid)
+        {
+            Copy(MangoFactory.NewOrder<Product_TuiHuo_main>(pRid));
+        }
+
+        /// <summary>
         /// 根据srcObj构造
         /// </summary>
         /// <param name="srcObj">源实体</param>
         public MangoReturnOrder(Product_TuiHuo_main srcObj)
         {
-            CopyFrom(srcObj);
+            Copy(srcObj);
         }
 
         /// <summary>
@@ -40,7 +39,7 @@ namespace C_WMS.Data.Mango.Data
         /// </summary>
         /// <param name="srcObj">源主订单</param>
         /// <returns>若成功则返回string.Empty；否则返回错误描述</returns>
-        public string CopyFrom(Product_TuiHuo_main srcObj)
+        public string Copy(Product_TuiHuo_main srcObj)
         {
             if (null != srcObj)
             {
@@ -82,9 +81,25 @@ namespace C_WMS.Data.Mango.Data
             }
             else
             {
-                return "源实例srcObj为null。";
+                string errMsg = string.Format("MangoReturnOrder.Copy(), invalid null input param.");
+                C_WMS.Data.Utility.MyLog.Instance.Warning(errMsg);
+                return errMsg;
             }
         }
 
+        /// <summary>
+        /// get id of order
+        /// </summary>
+        /// <returns></returns>
+        public string GetId() { return ProductLingYongMainId.ToString(); }
+
+        /// <summary>
+        /// overrided ToString()
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("{0}[{1}]", GetType(), ProductLingYongMainId);
+        }
     }
 }

@@ -93,26 +93,6 @@ namespace C_WMS.Data.CWms.CWmsEntity
             }
         }
 
-#if false
-        /// <summary>
-        /// default constructor
-        /// </summary>
-        public CWmsExWarehouseOrder()
-        {
-            mMangoOrder = new MangoExwarehouseOrder();
-            mWmsOrder = new WmsStockoutOrder();
-        }
-
-        /// <summary>
-        /// 获取单据Id
-        /// </summary>
-        /// <returns></returns>
-        public override string GetId()
-        {
-            return (null == (MangoOrder as MangoExwarehouseOrder)) ? string.Empty : (MangoOrder as MangoExwarehouseOrder).ProductOutputMainId.ToString();
-        }
-#endif
-
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -134,29 +114,13 @@ namespace C_WMS.Data.CWms.CWmsEntity
     /// </summary>
     class CWmsStockoutOrderHandler : CWmsOrderBaseHandlerBase<CWmsStockOrder, MangoStockouOrder, WmsStockoutOrder, CWmsSubStockoutOrder, CWmsStockoutOrderHandler>
     {
-#if false
-        class TArgs_UpdateDict709
+        /// <summary>
+        /// default constructor
+        /// </summary>
+        public CWmsStockoutOrderHandler() : base(TCWmsOrderType.EStockoutOrder)
         {
-            public CWmsExWarehouseOrder Order;// = null;
-            public DefDlgt_RunWCF<Product_WMS_Interface> dlgt;// = new DefDlgt_RunWCF<Product_WMS_Interface>(Dlgt_RunWCF);
-            public TDict285_Values IsUpdateOk;// = TDict285_Values.EUnknown;
-            public TDict285_Values IsDel;// = TDict285_Values.EUnknown;
-            public bool AddOnNotFound;// = false;
-            public int CurrentAreIndex;
-            public TDict709_Value MapClassId;
-
-            public TArgs_UpdateDict709(DefDlgt_RunWCF<Product_WMS_Interface> pDlgt, TDict709_Value pMapClassId, CWmsExWarehouseOrder pOrder, TDict285_Values pIsUpdateOk, TDict285_Values pIsDel, int pIndex, bool pAddOnNotFound)
-            {
-                MapClassId = pMapClassId;
-                Order = pOrder;
-                dlgt = pDlgt;
-                IsUpdateOk = pIsUpdateOk;
-                IsDel = pIsDel;
-                AddOnNotFound = pAddOnNotFound;
-                CurrentAreIndex = pIndex;
-            }
         }
-#endif
+
         /// <summary>
         /// 根据主出库单ID获取实体
         /// </summary>
@@ -165,14 +129,6 @@ namespace C_WMS.Data.CWms.CWmsEntity
         static public CWmsStockOrder NewOrder(string pId)
         {
             throw new NotImplementedException("");
-        }
-        override protected int Update709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg)
-        {
-            return Dict709Handle.UpdateRow(TDict709_Value.EExwarehouseOrder, pEid, pEid, pUpdateOk, pDel, out pMsg);
-        }
-        override protected int UpdateA709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg)
-        {
-            return Dict709Handle.UpdateRowA(TDict709_Value.EExwarehouseOrder, pEid, pEid, pUpdateOk, pDel, out pMsg);
         }
 
         /// <summary>

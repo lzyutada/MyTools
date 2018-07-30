@@ -99,6 +99,23 @@ namespace C_WMS.Data.CWms.Interfaces.Methods
     class MWmsTransactionBase<TTransaction, TRequest, TResponse> : Utility.CWmsAsyncControler, IMWmsTransaction<TResponse> where TResponse : class, new()
     {
         /// <summary>
+        /// enumerate steps for asynchrous transaction
+        /// </summary>
+        protected enum TAsyncSteps
+        {
+            EStart,
+            EReset709,
+            ENewRequestObject,
+            EDoTransaction,
+            EUpdate709,
+            ESuccess,
+            EFailed,
+            EStopped
+        }
+
+        protected TAsyncSteps _asyncStep = TAsyncSteps.EStopped;
+
+        /// <summary>
         /// 获取和设置同步通讯的Request数据
         /// </summary>
         public TRequest RequestObject { get; protected set; }
@@ -113,190 +130,31 @@ namespace C_WMS.Data.CWms.Interfaces.Methods
         /// </summary>
         virtual public bool TransactionIsSuccess { get { return Impl.TransactionIsSuccess(ResponseObject); } }
 
+        /// <summary>
+        /// Impl of transaction.
+        /// </summary>
         protected IMWmsTransactionImpl<TRequest, TResponse> Impl { get; set; }
-
-#if C_WMS_V1
-        /// <summary>
-        /// HTTP会话需要使用的参数
-        /// </summary>
-        public CWmsTransactionParams TransParams { get; private set; }
-        /// <summary>
-        /// 声明委托，WMS同步结束后的通知操作
-        /// </summary>
-        /// <param name="pUid"></param>
-        /// <param name="pMsg"></param>
-        public delegate void DefDlgt_NotifySyncResult(int pUid, string pMsg);
-        
-        /// <summary>
-        /// DefDlgt_NotifySyncResult委托对象
-        /// </summary>
-        protected DefDlgt_NotifySyncResult mDlgtNotifySyncResult = null;
-#endif
 
         /// <summary>
         /// Default constructor
         /// </summary>
         protected MWmsTransactionBase()
         {
-#if C_WMS_V1
-            LoadTransactionParams();
-            mDlgtNotifySyncResult = DingDingMsgToUser;
-#else
             Impl = InitImpl();
-#endif
-        }
-
-#if C_WMS_V1
-
-        /// <summary>
-        /// 加载C-WMS HTTP会话的各项参数
-        /// </summary>
-        virtual protected void LoadTransactionParams()
-        {
-            TransParams = new CWmsTransactionParams();
-            TransParams.PostParams.method = GetApiMethod();
         }
 
         /// <summary>
-        /// 处理服务器响应
-        /// </summary>
-        /// <param name="respBody">HTTP响应体</param>
-        /// <param name="encode">服务器响应回来的编码格式所对应的Encoding</param>
-        /// <returns>返回Response XML对应的数据实例</returns>
-        virtual public HttpRespXmlBase HandleResponse(byte[] respBody, Encoding encode)
-        {
-            if (null == encode || null == respBody)
-            {
-                C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.HandleResponse(respBody={1}, encoding={2})，非法空入参.", GetType(), respBody, encode);
-                return null;
-            }
-            else
-            {
-                return new HttpRespXmlBase(encode.GetString(respBody));
-            }
-        }
-
-        /// <summary>
-        /// 发送HTTP POST请求
-        /// </summary>
-        /// <param name="reqXmlBody">request XML实例</param>
-        /// <returns>Response XML实例</returns>
-        protected HttpRespXmlBase Post<T>(T reqXmlBody)
-        {
-            try
-            {
-                if (null == reqXmlBody)
-                {
-                    C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.Post<{1}>(reqXmlBody={2})，非法空入参.", GetType(), typeof(T), reqXmlBody);
-                    return null;
-                }
-
-                string errMsg = string.Empty;
-                byte[] respBody = null;
-                string respEncodingStr = string.Empty;
-
-                TransParams.RequestXml = reqXmlBody.ToString();
-                errMsg = CWmsUtility.HttpPostTransaction(TransParams.URI, "POST", "text/xml", Encoding.UTF8.GetBytes(reqXmlBody.ToString()), out respEncodingStr, out respBody);
-
-                if (null == respBody)
-                {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("HTTP通讯响应异常:\r\n请求URI: {0}\r\n请求内容: {1}\r\n响应内容为空", TransParams.URI, reqXmlBody);
-                    return null;
-                }
-                else
-                {
-                    var ret = HandleResponse(respBody, Encoding.GetEncoding(respEncodingStr));
-                    if (null == ret)
-                    {
-                        C_WMS.Data.Utility.MyLog.Instance.Error("HTTP通讯响应完成，处理服务器响应返回空:\r\n请求URI: {0}\r\n请求内容: {1}\r\n服务器响应CDATA: {2}\r\n服务器响应Encoding: {3}", TransParams.URI, reqXmlBody, respBody, respEncodingStr);
-                    }
-                    return ret;
-                }
-            }
-            catch (Exception ex)
-            {
-                C_WMS.Data.Utility.MyLog.Instance.Error(ex, "在{0}.{1}({2})中发生异常", GetType(), MethodBase.GetCurrentMethod().Name, reqXmlBody);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// 发送钉钉推送给指定用户
-        /// </summary>
-        /// <param name="pUid">用户Id</param>
-        /// <param name="pMsg"></param>
-        virtual protected void DingDingMsgToUser(int pUid, string pMsg)
-        {
-            // send to user
-            var rslt = Add_DingDingplan.send_dingding_message_to_user(pUid.Int(), CWmsConsts.cInt芒果钉秘Id, pMsg);
-
-            // send to 芒果商城订单群
-            rslt = Add_DingDingplan.send_dingding_message_to_user(CWmsConsts.cInt芒果商城订单群Id, CWmsConsts.cInt芒果钉秘Id, pMsg);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="iar"></param>
-        protected void Acb_NotifySyncResult(IAsyncResult iar)
-        {
-            try
-            {
-                (iar.AsyncState as DefDlgt_NotifySyncResult).EndInvoke(iar);    // 结束回调阻塞
-            }
-            catch (Exception ex)
-            {
-                C_WMS.Data.Utility.MyLog.Instance.Error(ex, "在{0}.{1}({2})中发生异常, AsyncState={3}", GetType(), MethodBase.GetCurrentMethod().Name, iar, iar?.AsyncState);
-            }
-        }
-
-#if false
-        /// <summary>
-        /// 返回API接口的method，需要在其子类中实现该方法
-        /// </summary>
-        /// <returns></returns>
-        abstract public string GetApiMethod();
-#endif
-        /// <summary>
-        /// 执行各接口的HTTP Transaction，需要在其子类中实现该方法
-        /// </summary>
-        /// <returns></returns>
-        abstract public HttpRespXmlBase DoTransaction();
-
-        /// <summary>
-        /// overided。执行接口的HTTP Transaction，该方法可以传入参数，返回HTTP Response Body、错误码和错误描述。需要在子类中实现
-        /// </summary>
-        /// <param name="pResp">返回HTTP Response Body</param>
-        /// <param name="pMsg">错误描述，若返回成功则返回String.Empty</param>
-        /// <param name="args">传入参数</param>
-        /// <returns>返回错误码</returns>
-        public virtual int DoTransaction(out HttpRespXmlBase pResp, out string pMsg, params object[] args)
-        {
-            throw new NotImplementedException("int DoTransaction(out HttpRespXmlBase, out string, params object[])需要在子类中实现");
-        }
-
-        /// <summary>
-        /// 针对int DoTransaction(out HttpRespXmlBase, out string, params object[])方法，解析params object[]入参。
-        /// 若解析成功则返回TError.RunGood；否则返回其他值
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public virtual int ParseArguments(params object[] args)
-        {
-            throw new NotImplementedException("int ParseArguments(params object[])需要在子类中实现");
-        }
-#else
-        /// <summary>
-        /// 
+        /// initializing Impl
         /// </summary>
         /// <returns></returns>
         virtual protected IMWmsTransactionImpl<TRequest, TResponse> InitImpl()
         {
-            throw new NotImplementedException("");
+            throw new NotImplementedException(string.Format("{0}.InitImpl(), should be implemented with it's inherits.", GetType()));
         }
         
         /// <summary>
-        /// 
+        /// do transaction for synchronizing.
+        /// return the response from WMS service -or- null if internal error.
         /// </summary>
         /// <returns></returns>
         virtual public TResponse DoTransaction()
@@ -305,52 +163,52 @@ namespace C_WMS.Data.CWms.Interfaces.Methods
             {
                 if (null == Impl)
                 {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction()失败，未初始化Impl。", MethodBase.GetCurrentMethod().DeclaringType.Name);
+                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction()失败，未初始化Impl。", GetType());
                     return null;
                 }
+
                 int err = TError.RunGood.Int();
                 string errMsg = string.Empty;
-                TResponse rsltResp = null;
-
-                if (TError.RunGood.Int() != Impl.ParseArguments())
+                if (0 < (err = Impl.Reset709()))
                 {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(), 解析参数args失败, error={1}。", MethodBase.GetCurrentMethod().DeclaringType.Name, err);
-                    return null;
-                }// parse argument
-                else if (0 < (err = Impl.Reset709()))
-                {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(), 重置709字典失败, error={1}", MethodBase.GetCurrentMethod().DeclaringType.Name, err);
+                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(), 重置709字典失败, error={1}", GetType(), err);
                     return null;
                 }// operations on 709
                 else if (null == (RequestObject = Impl.NewRequestObj()))
                 {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(), 创建请求体对象失败, error={1}", MethodBase.GetCurrentMethod().DeclaringType.Name, err);
+                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(), 创建请求体对象失败", GetType());
                     return null;
                 } // init request data
-                else if (null != (rsltResp = Impl.DoTransaction(RequestObject)) && TransactionIsSuccess)
+                else if (null != (ResponseObject = Impl.DoTransaction(RequestObject)))
                 {
-                    if (0 >= (err = Impl.Update709(true)))
+                    if (TransactionIsSuccess)
                     {
-                        C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(), WMS系统响应成功，更新709失败。", MethodBase.GetCurrentMethod().DeclaringType.Name, err);
+                        err = Impl.Update709(true);
+                    }
+                    if (0 >= err)
+                    {
+                        C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(), WMS系统响应成功，更新709失败, error={1}。", GetType(), err);
                     }
                 }
-                else
+
+                if (!TransactionIsSuccess)
                 {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(), WMS系统响应null或响应失败({1}).", MethodBase.GetCurrentMethod().DeclaringType.Name, TransactionIsSuccess);
+                    C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.DoTransaction()失败, WMS系统响应: \r\n{1}.", GetType(), ResponseObject);
                 }
-                return rsltResp;
+                return ResponseObject;
             }
             catch (Exception ex)
             {
-                C_WMS.Data.Utility.MyLog.Instance.Error(ex, "{0}.DoTransaction()发生异常", MethodBase.GetCurrentMethod().DeclaringType.Name);
+                C_WMS.Data.Utility.MyLog.Instance.Error(ex, "{0}.DoTransaction()发生异常", GetType());
                 return null;
             }
         }
 
         /// <summary>
-        /// 
+        /// overrided. do transaction for synchronizing.
+        /// return the response from WMS service -or- null if internal error.
         /// </summary>
-        /// <param name="args"></param>
+        /// <param name="args">arguments for transaction.</param>
         /// <returns></returns>
         virtual public TResponse DoTransaction(params object[] args)
         {
@@ -358,46 +216,15 @@ namespace C_WMS.Data.CWms.Interfaces.Methods
             {
                 if (null == Impl)
                 {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(params object[])失败，未初始化Impl。", MethodBase.GetCurrentMethod().DeclaringType.Name);
+                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(params object[])失败，未初始化Impl。", GetType());
                     return null;
-                }
-
-                int err = TError.RunGood.Int();
-                string errMsg = string.Empty;
-                //TResponse respObj = null;
-                if (TError.RunGood.Int() != Impl.ParseArguments(args))
-                {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(params object[]), 解析参数args失败, error={1}。\r\nArguments Debug:{2}", MethodBase.GetCurrentMethod().DeclaringType.Name, err, Utility.CWmsDataUtility.GetDebugInfo_Args(args));
-                    return null;
-                }// parse argument
-                else if (TError.RunGood.Int() != (err = Impl.Reset709()))
-                {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(params object[]), 重置709字典失败, error={1}", MethodBase.GetCurrentMethod().DeclaringType.Name, err);
-                    return null;
-                }// operations on 709
-                else if (null == (RequestObject = Impl.NewRequestObj()))
-                {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(params object[]), 创建请求体对象失败, error={1}", MethodBase.GetCurrentMethod().DeclaringType.Name, err);
-                    return null;
-                } // init request data
-                else if (null != (ResponseObject = Impl.DoTransaction(RequestObject)) && TransactionIsSuccess)
-                {
-                    if (0 >= (err = Impl.Update709(true)))
-                    {
-                        C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(out TResponse, out string, params object[]), WMS系统响应成功，更新709失败。", MethodBase.GetCurrentMethod().DeclaringType.Name, err);
-                        err = TError.Pro_HaveNoData.Int();
-
-                    }
                 }
                 else
-                {
-                    C_WMS.Data.Utility.MyLog.Instance.Error("{0}.DoTransaction(out TResponse, out string, params object[]), WMS系统响应null或响应失败({1}).", MethodBase.GetCurrentMethod().DeclaringType.Name, TransactionIsSuccess);
-                }
-                return ResponseObject;
+                    return (TError.RunGood.Int() == Impl.ParseArguments(args)) ? DoTransaction() : null;
             }
             catch (Exception ex)
             {
-                C_WMS.Data.Utility.MyLog.Instance.Error(ex, "{0}.DoTransaction(params object[])发生异常", MethodBase.GetCurrentMethod().DeclaringType.Name);
+                C_WMS.Data.Utility.MyLog.Instance.Error(ex, "{0}.DoTransaction(params object[])发生异常", GetType());
                 return null;
             }
         }
@@ -413,63 +240,58 @@ namespace C_WMS.Data.CWms.Interfaces.Methods
         {
             try
             {
-                int err = TError.RunGood.Int();
-                pResp = null;
+
                 if (null == Impl)
                 {
-                    pMsg = string.Format("{0}.DoTransaction(out TResponse, out string, params object[])失败，未初始化Impl。", MethodBase.GetCurrentMethod().DeclaringType.Name);
+                    pResp = null;
+                    pMsg = string.Format("{0}.DoTransaction(out TResponse, out string, params object[])失败，未初始化Impl。", GetType());
                     C_WMS.Data.Utility.MyLog.Instance.Error(pMsg);
-                    return err = TError.Post_ParamError.Int();
-                }
-                if (TError.RunGood.Int() != Impl.ParseArguments(args))
-                {
-                    pMsg = string.Format("{0}.DoTransaction(out TResponse, out string, params object[]), 解析参数args失败, error={1}。\r\nArguments Debug:{2}", MethodBase.GetCurrentMethod().DeclaringType.Name, err, Utility.CWmsDataUtility.GetDebugInfo_Args(args));
-                    C_WMS.Data.Utility.MyLog.Instance.Error(pMsg);
-                    return err = TError.Post_ParamError.Int();
-                }// parse argument
-                else if (TError.RunGood.Int() != (err = Impl.Reset709()))
-                {
-                    pMsg = string.Format("{0}.DoTransaction(out TResponse, out string, params object[]), 重置709字典失败, error={1}", MethodBase.GetCurrentMethod().DeclaringType.Name, err);
-                    C_WMS.Data.Utility.MyLog.Instance.Error(pMsg);
-                    return TError.WCF_RunError.Int();
-                }// operations on 709
-                else if (null == (RequestObject = Impl.NewRequestObj()))
-                {
-                    pMsg = string.Format("{0}.DoTransaction(out TResponse, out string, params object[]), 创建请求体对象失败, error={1}", MethodBase.GetCurrentMethod().DeclaringType.Name, err);
-                    C_WMS.Data.Utility.MyLog.Instance.Error(pMsg);
-                    return TError.Pro_HaveNoData.Int();
-                } // init request data
-                else if (null != (pResp = Impl.DoTransaction(RequestObject)) && TransactionIsSuccess)
-                {
-                    if (0 < (err = Impl.Update709(true)))
-                    {
-                        pMsg = string.Empty;
-                        err = TError.RunGood.Int();
-                    }
-                    else
-                    {
-                        pMsg = string.Format("{0}.DoTransaction(out TResponse, out string, params object[]), WMS系统响应成功，更新709失败。", MethodBase.GetCurrentMethod().DeclaringType.Name, err);
-                        C_WMS.Data.Utility.MyLog.Instance.Error(pMsg);
-                        err = TError.Pro_HaveNoData.Int();
-                    }
+                    return TError.Post_ParamError.Int();
                 }
                 else
                 {
-                    pMsg = string.Format("{0}.DoTransaction(out TResponse, out string, params object[]), WMS系统响应null或响应失败({1}).", MethodBase.GetCurrentMethod().DeclaringType.Name, TransactionIsSuccess);
-                    C_WMS.Data.Utility.MyLog.Instance.Error(pMsg);
-                    err = TError.Post_NoChange.Int();
+                    pMsg = string.Empty;
+                    pResp = DoTransaction(args);
+                    return (TransactionIsSuccess) ? TError.RunGood.Int() : TError.Post_NoChange.Int();
                 }
-                return err;
             }
             catch (Exception ex)
             {
                 pResp = null;
-                pMsg = string.Format("{0}.DoTransaction(out TResponse, out string, params object[]发生异常, {1}", MethodBase.GetCurrentMethod().DeclaringType.Name, ex.Message);
+                pMsg = string.Format("{0}.DoTransaction(out TResponse, out string, params object[]发生异常, {1}", GetType(), ex.Message);
                 C_WMS.Data.Utility.MyLog.Instance.Error(ex, pMsg);
                 return TError.Post_NoChange.Int();
             }
         }
 
+        /// <summary>
+        /// 激活计时器，启动异步通讯。若操作成功则返回TError.RunGood；否则返回其他值
+        /// </summary>
+        /// <param name="args">arguments for transaction.</param>
+        /// <returns></returns>
+        public override int Activate(params object[] args)
+        {
+            if (TAsyncSteps.EStopped != _asyncStep)
+            {
+                C_WMS.Data.Utility.MyLog.Instance.Error("Failed in {0}.Activate(), async-transaction is busy[{1}].", GetType(), _asyncStep);
+                return TError.Ser_EvenHaveData.Int();
+            }
+            else
+            {
+                int err = (TError.RunGood.Int() == Impl.ActivateImpl(args)) ? base.Activate() : TError.WCF_ConnError.Int();
+                if (TError.RunGood.Int() == err)
+                {
+                    _asyncStep = TAsyncSteps.EStart;
+                }
+                return err;
+            }
+        }
+
+        /// <summary>
+        /// Run steps for asynchrous transaction with WMS service.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         protected override void RunL(object sender, EventArgs args)
         {
             try
@@ -477,28 +299,74 @@ namespace C_WMS.Data.CWms.Interfaces.Methods
                 if (System.Threading.Interlocked.Exchange(ref inTimer, 1) == 0)
                 {
                     // 若控制器操作逻辑成功，并且控制器的状态不是EStopped，则再次激活计时器
-                    if (TError.RunGood.Int() == Impl.RunImpl(sender, args)) StartTimer();
+                    DoRunL();
+                    if (TAsyncSteps.EStopped != _asyncStep) StartTimer();
                     else StopTimer();
                     System.Threading.Interlocked.Exchange(ref inTimer, 0);
                 } // if (Interlocked.Exchange(ref inTimer, 1) == 0)
             }
             catch (Exception ex)
             {
-                C_WMS.Data.Utility.MyLog.Instance.Error(ex, "MWmsTransactionBase.Run发生异常。");
+                C_WMS.Data.Utility.MyLog.Instance.Error(ex, "{0}.Run()发生异常。", GetType());
                 StopTimer();
             }
         }
 
         /// <summary>
-        /// 激活计时器，启动异步通讯。若操作成功则返回TError.RunGood；否则返回其他值
+        /// execute running step. return TError.RunGood if execution of current async step is success
+        /// -or- return others in TError if execution failed.
         /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public override int Activate(params object[] args)
+        protected virtual int DoRunL()
         {
-            if (TError.RunGood.Int() == Impl.ActivateImpl(args)) return base.Activate();
-            else return TError.RunGood.Int();
-        }
-#endif
-    }
+            int err = TError.RunGood.Int();
+            TAsyncSteps tmpStatus = _asyncStep;
+
+            switch (_asyncStep)
+            {
+                case TAsyncSteps.EStart:
+                    {
+                        _asyncStep = TAsyncSteps.EReset709;
+                        break;
+                    }
+                case TAsyncSteps.EReset709:
+                    {
+                        _asyncStep = (0 < (err = Impl.Reset709())) ? TAsyncSteps.ENewRequestObject : TAsyncSteps.EFailed;
+                        break;
+                    }
+                case TAsyncSteps.ENewRequestObject:
+                    {
+                        _asyncStep = (null != (RequestObject = Impl.NewRequestObj())) ? TAsyncSteps.EDoTransaction : TAsyncSteps.EFailed;
+                        break;
+                    }
+                case TAsyncSteps.EDoTransaction:
+                    {
+                        ResponseObject = Impl.DoTransaction(RequestObject);
+                        _asyncStep = (TransactionIsSuccess) ? TAsyncSteps.EUpdate709 : TAsyncSteps.EFailed;
+                        break;
+                    }
+                case TAsyncSteps.EUpdate709:
+                    {
+                        _asyncStep = (0 < (err = Impl.Update709(true))) ? TAsyncSteps.ESuccess : TAsyncSteps.EFailed;
+                        break;
+                    }
+                case TAsyncSteps.ESuccess: { _asyncStep = TAsyncSteps.EStopped; break; }
+                case TAsyncSteps.EFailed:
+                    {
+                        C_WMS.Data.Utility.MyLog.Instance.Error("Failed in {0}.DoRunL() debugging.....\r\nRquestObject={1}\r\nResponseObject={2}", GetType(), RequestObject, ResponseObject);
+                        _asyncStep = TAsyncSteps.EStopped;
+                        break;
+                    }
+                case TAsyncSteps.EStopped:
+                    {
+                        break;
+                    }
+            } // switch(_asyncStep)
+
+            if (TError.RunGood.Int() != err)
+            {
+                C_WMS.Data.Utility.MyLog.Instance.Error("Failed in {0}.DoRunL(), err={1}. AsyncStep was EFailed to EStopped.", GetType(), tmpStatus, err);
+            }
+            return err;
+        } // DoRunL
+    } // MWmsTransactionBase
 }

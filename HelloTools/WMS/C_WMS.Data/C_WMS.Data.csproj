@@ -120,6 +120,9 @@
     <Compile Include="CWms\Interfaces\Data\CWmsTransReqObjBase.cs" />
     <Compile Include="CWms\Interfaces\Data\CWmsTransRespObjBase.cs" />
     <Compile Include="CWms\Interfaces\Methods\MWmsTransactionImplBase.cs" />
+    <Compile Include="Mango\Data\MangoMallOrder.cs" />
+    <Compile Include="Mango\Data\MangoSubDeliveryOrder.cs" />
+    <Compile Include="Mango\Data\MangoSubMallOrder.cs" />
     <Compile Include="Wms\Data\HttpPostPramsEntity.cs" />
     <Compile Include="Wms\Data\HttpReqXmlBase.cs" />
     <Compile Include="Wms\Data\HttpReqXml_EntryOrderCreate.cs" />
@@ -163,15 +166,13 @@
     </Compile>
     <Compile Include="CWms\Interfaces\Methods\IMWmsTransactionImpl.cs" />
     <Compile Include="CWms\Interfaces\Methods\IMWmsTransaction.cs" />
-    <Compile Include="Mango\Data\MangoEntityBase.cs" />
     <Compile Include="Mango\Data\MangoEntryOrder.cs" />
     <Compile Include="Mango\Data\MangoStockouOrder.cs" />
-    <Compile Include="Mango\Data\MangoOrderBase.cs" />
+    <Compile Include="Mango\Data\IMangoOrderBase.cs" />
     <Compile Include="Mango\Data\MangoProduct.cs" />
     <Compile Include="Mango\Data\MangoReturnOrder.cs" />
     <Compile Include="Mango\Data\MangoSubEntryOrder.cs" />
     <Compile Include="Mango\Data\MangoSubStockoutOrder.cs" />
-    <Compile Include="Mango\Data\MangoSubPurchaseOrder.cs" />
     <Compile Include="Mango\Data\MangoSubReturnOrder.cs" />
     <Compile Include="Mango\Data\MangoWarehouse.cs" />
     <Compile Include="Mango\MangoFactory.cs" />

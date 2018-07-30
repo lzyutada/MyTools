@@ -49,6 +49,13 @@ namespace C_WMS.Data.CWms.CWmsEntity
     class CWmsEntryOrderHandler : CWmsOrderBaseHandlerBase<CWmsEntryOrder, MangoEntryOrder, WmsEntryOrder, CWmsSubEntryOder, CWmsEntryOrderHandler>
     {
         /// <summary>
+        /// default constructor
+        /// </summary>
+        public CWmsEntryOrderHandler() : base(TCWmsOrderType.EEntryOrder)
+        {
+        }
+
+        /// <summary>
         /// 根据主入库单ID获取实体
         /// </summary>
         /// <param name="pId"></param>
@@ -57,17 +64,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
         {
             throw new NotImplementedException("");
         }
-
-        override protected int Update709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg)
-        {
-            return Dict709Handle.UpdateRow( TDict709_Value.EEntryOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
-        }
-
-        override protected int UpdateA709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg)
-        {
-            return Dict709Handle.UpdateRowA(TDict709_Value.EEntryOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
-        }
-
+        
         /// <summary>
         /// get entity of WmsLogistics as the logistics of this entryorder represented by _order.
         /// -or- return null if failed in method executation.

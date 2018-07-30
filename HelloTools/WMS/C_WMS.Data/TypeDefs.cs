@@ -26,63 +26,63 @@ namespace C_WMS.Data
         EDefault = ENormal
     }
 
-    /// <summary>
-    /// 单据类型，指代入库订单、出库订单、退货订单等。
-    /// M.C.O.C: Mango Cancel Order Category，指代可已取消的单据类型
-    /// </summary>
-    public enum TCWmsOrderCategory
-    {
-        /// <summary>
-        /// 入库单
-        /// </summary>
-        EEntryOrder,
+    ///// <summary>
+    ///// 单据类型，指代入库订单、出库订单、退货订单等。
+    ///// M.C.O.C: Mango Cancel Order Category，指代可已取消的单据类型
+    ///// </summary>
+    //public enum TCWmsOrderCategory
+    //{
+    //    /// <summary>
+    //    /// 入库单
+    //    /// </summary>
+    //    EEntryOrder,
 
-        /// <summary>
-        /// 采购订单
-        /// </summary>
-        EPurchaseOrder,
+    //    /// <summary>
+    //    /// 采购订单
+    //    /// </summary>
+    //    EPurchaseOrder,
 
-        /// <summary>
-        /// 出库单
-        /// </summary>
-        EExwarehouseOrder,
+    //    /// <summary>
+    //    /// 出库单
+    //    /// </summary>
+    //    EExwarehouseOrder,
 
-        /// <summary>
-        /// 退货单
-        /// </summary>
-        EReturnOrder,
+    //    /// <summary>
+    //    /// 退货单
+    //    /// </summary>
+    //    EReturnOrder,
 
-        /// <summary>
-        /// 商城订单
-        /// </summary>
-        EMallOrder,
+    //    /// <summary>
+    //    /// 商城订单
+    //    /// </summary>
+    //    EMallOrder,
 
-        /// <summary>
-        /// 退货订单可以取消
-        /// </summary>
-        EMcocReturnOrder,
+    //    /// <summary>
+    //    /// 退货订单可以取消
+    //    /// </summary>
+    //    EMcocReturnOrder,
 
-        /// <summary>
-        /// TODO: 网络新品库（货主为芒果网络）的出库订单（无订单出库）也应该是可以取消的（商城上没有取消的操作入口）。
-        /// 目前阶段不处理，什么时候商城上完成了取消无订单出库的功能，再这里处理单据取消。 
-        /// </summary>
-        EMcocStockoutWithoutMallOrder,
+    //    /// <summary>
+    //    /// TODO: 网络新品库（货主为芒果网络）的出库订单（无订单出库）也应该是可以取消的（商城上没有取消的操作入口）。
+    //    /// 目前阶段不处理，什么时候商城上完成了取消无订单出库的功能，再这里处理单据取消。 
+    //    /// </summary>
+    //    EMcocStockoutWithoutMallOrder,
 
-        /// <summary>
-        /// 单据类型的数量
-        /// </summary>
-        ECount,
+    //    /// <summary>
+    //    /// 单据类型的数量
+    //    /// </summary>
+    //    ECount,
 
-        /// <summary>
-        /// 未知类型 
-        /// </summary>
-        EUnknownCategory,
+    //    /// <summary>
+    //    /// 未知类型 
+    //    /// </summary>
+    //    EUnknownCategory,
 
-        /// <summary>
-        /// 默认值
-        /// </summary>
-        EDefaultCategory = EUnknownCategory
-    }
+    //    /// <summary>
+    //    /// 默认值
+    //    /// </summary>
+    //    EDefaultCategory = EUnknownCategory
+    //}
     
     /// <summary>
     /// C-WMS系统中的商品类型

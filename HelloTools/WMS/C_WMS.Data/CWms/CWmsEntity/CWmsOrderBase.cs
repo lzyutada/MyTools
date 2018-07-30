@@ -24,7 +24,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
     /// <summary>
     /// 主单据基类
     /// </summary>
-    abstract class CWmsOrderBase<TOrderType, TMangoType, TWmsType, TSubOrderType, THandlerType> :Interface.CWms.CWmsEntity.CWmsEntityBase
+    abstract class CWmsOrderBase<TOrderType, TMangoType, TWmsType, TSubOrderType, THandlerType> : Interface.CWms.CWmsEntity.CWmsEntityBase
     {
         #region Properties
         public THandlerType Handler { get; protected set; }
@@ -84,6 +84,8 @@ namespace C_WMS.Data.CWms.CWmsEntity
     /// </summary>
     abstract class CWmsOrderBaseHandlerBase<TOrderType, TMangoType, TWmsType, TSubOrderType, THandlerType> : IDisposable // where TOrderType : class, new()
     {
+        protected TCWmsOrderType OrderType = TCWmsOrderType.EUnknownOrder;
+
         /// <summary>
         /// Array of WaitHandle for async operations on WCF.
         /// </summary>
@@ -96,14 +98,14 @@ namespace C_WMS.Data.CWms.CWmsEntity
         /// <param name="pOperation"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        protected delegate int DefDlgt_RunWCF<TEntity>(Mango.TWCFOperation pOperation, params object[] args);
+        protected delegate int DefDlgt_RunWCF<TEntity>(TWCFOperation pOperation, params object[] args);
 
         /// <summary>
         /// default constructor
         /// </summary>
-        protected CWmsOrderBaseHandlerBase()
+        protected CWmsOrderBaseHandlerBase(TCWmsOrderType pType)
         {
-            //_ares = new List<AutoResetEvent>(5);
+            OrderType = pType;
         }
 
         public void Dispose()
@@ -175,7 +177,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
             }
             else if (addOnNotFound && TWCFOperation.EUpdateA == pOperation)
             {
-                err = err = UpdateA709(orderId, pwiList[currentIndex].MapId2.Int().ToString(), isUpdateOK, isDel, out msg); // Dict709Handle.UpdateRowA_Order(TDict709_Value.EEntryOrder, orderId, pwiList[currentIndex].MapId2.Int().ToString(), isUpdateOK, isDel, out msg);
+                err = UpdateA709(orderId, pwiList[currentIndex].MapId2.Int().ToString(), isUpdateOK, isDel, out msg); // Dict709Handle.UpdateRowA_Order(TDict709_Value.EEntryOrder, orderId, pwiList[currentIndex].MapId2.Int().ToString(), isUpdateOK, isDel, out msg);
             }
             else
             {
@@ -244,8 +246,42 @@ namespace C_WMS.Data.CWms.CWmsEntity
             return -1;
         }
 
-        abstract protected int Update709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg);
+        virtual protected int Update709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg)
+        {
+            switch (OrderType)
+            {
+                case TCWmsOrderType.EEntryOrder:
+                    return Dict709Handle.UpdateRow(TDict709_Value.EEntryOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
+                case TCWmsOrderType.EStockoutOrder:
+                    return Dict709Handle.UpdateRow(TDict709_Value.EExwarehouseOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
+                case TCWmsOrderType.EReturnOrder:
+                    return Dict709Handle.UpdateRow(TDict709_Value.EReturnOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
+                default:
+                    {
+                        pMsg = string.Format("{0}.Update709(), unknown order type={1}", GetType(), OrderType);
+                        C_WMS.Data.Utility.MyLog.Instance.Warning(pMsg);
+                        return TError.Post_NoChange.Int();
+                    }
+            }
+        }
 
-        abstract protected int UpdateA709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg);
+        virtual protected int UpdateA709(string pEid, string pEsId, TDict285_Values pUpdateOk, TDict285_Values pDel, out string pMsg)
+        {
+            switch (OrderType)
+            {
+                case TCWmsOrderType.EEntryOrder:
+                    return Dict709Handle.UpdateRowA(TDict709_Value.EEntryOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
+                case TCWmsOrderType.EStockoutOrder:
+                    return Dict709Handle.UpdateRowA(TDict709_Value.EExwarehouseOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
+                case TCWmsOrderType.EReturnOrder:
+                    return Dict709Handle.UpdateRowA(TDict709_Value.EReturnOrder, pEid, pEsId, pUpdateOk, pDel, out pMsg);
+                default:
+                    {
+                        pMsg = string.Format("{0}.Update709(), unknown order type={1}", GetType(), OrderType);
+                        C_WMS.Data.Utility.MyLog.Instance.Warning(pMsg);
+                        return TError.Post_NoChange.Int();
+                    }
+            }
+        }
     } // class CWmsOrderBaseHandlerBase
 }

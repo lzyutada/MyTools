@@ -36,7 +36,7 @@ namespace C_WMS.Data.CWms.CWmsEntity
         /// <param name="pWmsOrder">source object of WmsReturnOrderDetail</param>
         public void CopyFrom(MangoSubReturnOrder pMangoOrder, WmsReturnOrderDetail pWmsOrder)
         {
-            MangoOrder.CopyFrom(pMangoOrder);
+            MangoOrder.Copy(pMangoOrder);
             WmsOrder.CopyFrom(pWmsOrder);
         }
     }

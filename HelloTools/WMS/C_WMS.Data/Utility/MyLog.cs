@@ -285,6 +285,7 @@ namespace C_WMS.Data.Utility
         /// write a line of Fatal, and it contains informations of exception.
         /// </summary>
         /// <param name="exp">exception to be logged.</param>
+        /// <param name="fmt"></param>
         /// <param name="args">Fatal infos to be written.</param>
         public void Fatal(Exception exp, string fmt, params object[] args)
         {

@@ -16,53 +16,43 @@ namespace C_WMS.Data.Mango.Data
     /// <summary>
     /// 芒果商城中的子出库订单（通过购物车结算购买）
     /// </summary>
-    class MangoSubStockoutOrder : Product_Warehouse_ProductOutput
+    class MangoSubStockoutOrder : Product_Warehouse_ProductOutput, IMangoOrderBase
     {
         #region Properties
         /// <summary>
-        /// handler of MangoSubExwarehouseOrder
+        /// handler of MangoSubStockoutOrderHandler
         /// </summary>
-        public MangoSubExwarehouseOrderHandler Handler = new MangoSubExwarehouseOrderHandler();
+        public MangoSubStockoutOrderHandler Handler = new MangoSubStockoutOrderHandler();
 
         /// <summary>
         /// 商城中子订单关联的子配送单ID
         /// </summary>
-        public string SubDeliveryOrderId { get; protected set; }
+        public string SubDeliveryOrderId => (null != Handler) ? Handler.GetSubDeliveryOrder(this).GetId() : string.Empty;
 
         /// <summary>
         /// 商城中mSubDeliveryOrderId关联的商城子订单Id
         /// </summary>
-        public string SubMallOrderId { get; protected set; }
+        public string SubMallOrderId => (null != Handler) ? Handler.GetSubMallOrder(this).GetId() : string.Empty;
 
         /// <summary>
         /// 商城中mSubMallOrderId关联的商城主订单Id
         /// </summary>
-        public string MallOrderId { get; protected set; }
+        public string MallOrderId => (null != Handler) ? Handler.GetMallOrder(this).GetId() : string.Empty;
 
         /// <summary>
         /// 其对应的商城订单的订单类型
         /// </summary>
-        public TMangoOrderType MallOrderType { get; protected set; }
+        public TMangoOrderType MallOrderType => (null != Handler) ? MangoFactory.To_TMangoOrderType((Handler.GetSubMallOrder(this) as MangoSubMallOrder).DingDanType.Int()) : TMangoOrderType.EDefaultType;
 
         /// <summary>
         /// 要求出库时间
         /// </summary>
-        public string ScheduleDate { get; protected set; }
+        public string ScheduleDate => (null != Handler) ? Handler.GetScheduleDate(this) : DateTime.MaxValue.ToString("yyyy-MM-dd 00:00:00");
 
         /// <summary>
         /// 应收商品数量
         /// </summary>
-        public decimal PlanQuantity { get; protected set; }
-
-        ///// <summary>
-        ///// 售价
-        ///// </summary>
-        //public double price = 0.00;
-
-        ///// <summary>
-        ///// 实收商品数量, 默认为-1（非法)
-        ///// </summary>
-        //public int actualQty = -1;
+        public decimal PlanQuantity => (null != Handler) ? Handler.GetPlanQuantity(this) : 0M;
         #endregion
 
         /// <summary>
@@ -70,7 +60,15 @@ namespace C_WMS.Data.Mango.Data
         /// </summary>
         public MangoSubStockoutOrder()
         {
-            Reset();
+        }
+
+        /// <summary>
+        /// construct by id
+        /// </summary>
+        /// <param name="id"></param>
+        public MangoSubStockoutOrder(string id)
+        {
+            Copy(MangoFactory.NewOrder<Product_Warehouse_ProductOutput>(id));
         }
 
         /// <summary>
@@ -80,14 +78,14 @@ namespace C_WMS.Data.Mango.Data
         /// <returns>若成功则返回string.Empty; 否则返回错误描述</returns>
         public MangoSubStockoutOrder(Product_Warehouse_ProductOutput srcObj)
         {
-            CopyFrom(srcObj);
+            Copy(srcObj);
         }
 
         /// <summary>
         /// 根据Product_Warehouse_ProductOutput的实例进行构造
         /// </summary>
         /// <param name="srcObj">源实例</param>
-        public string CopyFrom(Product_Warehouse_ProductOutput srcObj)
+        public string Copy(Product_Warehouse_ProductOutput srcObj)
         {
             if (null != srcObj)
             {
@@ -126,91 +124,49 @@ namespace C_WMS.Data.Mango.Data
                 UpdateTime = srcObj.UpdateTime;                 // 最后修改时间
                 LingYongRen = srcObj.LingYongRen;               // 存放工号。接收、领用人
                 #endregion
-                Reset(ProductOutputId.Int().ToString());
                 return string.Empty;
             }
             else
             {
-                string errMsg = "源实例srcObj为null。";
-                C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.{1}, {2}", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, errMsg);
+                string errMsg = string.Format("MangoSubStockoutOrder.Copy(), invalid null input param.");
+                C_WMS.Data.Utility.MyLog.Instance.Warning(errMsg);
                 return errMsg;
             }
         }
 
         /// <summary>
-        /// 单据被重新复制，其相关联的配送单、商城订单被重置
+        /// IMangoOrderBase.GetId(), return id of order
         /// </summary>
-        protected void Reset()
-        {
-            SubDeliveryOrderId = string.Empty;
-            SubMallOrderId = string.Empty;
-            MallOrderId = string.Empty;
-            MallOrderType = TMangoOrderType.EUnknown;
-            ScheduleDate = DateTime.MinValue.ToString();
-            PlanQuantity = -1;
-        }
+        /// <returns></returns>
+        public string GetId() { return ProductOutputId.ToString(); }
 
         /// <summary>
-        /// 根据传入的子出库单号更新相关联的配送单编号、商城订单编号
+        /// overrided ToString()
         /// </summary>
-        /// <param name="pOrderId"></param>
-        protected void Reset(string pOrderId)
+        /// <returns></returns>
+        public override string ToString()
         {
-            if (string.IsNullOrEmpty(pOrderId))
-            {
-                C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.{1}, invalid null param(pOrderId)", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name);
-                return;
-            }
-            try
-            {
-                // 获取子配送单Id和子订单ID
-                var filters = Handler.GetFilter_GetDeliveryOrder(this);
-                var deliveryOder = MisModelFactory.GetMisEntity<Product_PeiSong_Product>(filters);
-                //var queryRslt = WCF<Product_PeiSong_Product>.Query(1, CWmsConsts.cIntDefaultWcfQueryPageSize, Handler.GetFilter_GetDeliveryOrder(this), new List<CommonOrderModel>());
-                if (null != deliveryOder)
-                {
-                    SubMallOrderId = deliveryOder.ZiDingDanID.Int().ToString();
-                    SubDeliveryOrderId = deliveryOder.ProductLingYongId.Int().ToString();
-
-                    var subMallOrder = MisModelFactory.GetMisEntity<Product_User_DingDan_ProductList>(SubMallOrderId); // 获取子订单Id
-                    //var subOrder = WCF<Product_User_DingDan_ProductList>.Query(SubMallOrderId.Int()).Data;
-                    if (null == subMallOrder)
-                    {
-                        C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.{1}({2}), failed in retrieving sub-mallorder({3})", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, pOrderId, SubMallOrderId);
-                        Reset();
-                        return;
-                    }
-                    MallOrderId = subMallOrder.DingDanID.ToString(); // ID of main-mallorder
-                    MallOrderType = MangoFactory.To_TMangoOrderType(subMallOrder.DingDanType.Int()); // (TMangoOrderType)subMallOrder.DingDanType.Int();
-                    ScheduleDate = subMallOrder.PeiSongTime.ToString();
-                    PlanQuantity = subMallOrder.ProductCount.Decimal();
-                }
-                else
-                {
-                    C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.{1}({2}), failed in retrieving sub-deliveryorder by FILTER:{3}", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name, pOrderId, Utility.CWmsDataUtility.GetDebugInfo_MisFilter(filters));
-                    Reset();
-                }
-            }
-            catch (Exception ex)
-            {
-                C_WMS.Data.Utility.MyLog.Instance.Error(ex, "根据子出库单号[{0}]更新相关联的配送单编号、商城订单编号异常", pOrderId);
-                Reset();
-            }
-        }
+            return string.Format("{0}[{1}]", GetType(), ProductOutputId);
+        }        
     }
 
     /// <summary>
     /// handler of MangoSubExwarehouseOrder
     /// </summary>
-    class MangoSubExwarehouseOrderHandler
+    class MangoSubStockoutOrderHandler
     {
-        public List<CommonFilterModel> GetFilter_GetDeliveryOrder(MangoSubStockoutOrder pOrder)
+        /// <summary>
+        /// init and return a list of filter for retrieving the sub-delivery order for pOrder.
+        /// </summary>
+        /// <param name="pOrder"></param>
+        /// <returns></returns>
+        public List<CommonFilterModel> NewFilter_GetDeliveryOrder(MangoSubStockoutOrder pOrder)
         {
             try
             {
                 if (null == pOrder)
                 {
-                    C_WMS.Data.Utility.MyLog.Instance.Warning("{0}.{1}, invalid null param.", MethodBase.GetCurrentMethod().DeclaringType.Name, MethodBase.GetCurrentMethod().Name);
+                    C_WMS.Data.Utility.MyLog.Instance.Warning("MangoSubStockoutOrderHandler.NewFilter_GetDeliveryOrder(), invalid null param.");
                     return null;
                 }
                 List<CommonFilterModel> filters = new List<CommonFilterModel>(2);
@@ -220,9 +176,128 @@ namespace C_WMS.Data.Mango.Data
             }
             catch(Exception ex)
             {
-                C_WMS.Data.Utility.MyLog.Instance.Warning(ex, "!!Exception in getting filter for retrieving sub-delivery-order by sub-stockout-order.");
+                C_WMS.Data.Utility.MyLog.Instance.Warning(ex, "Exception in MangoSubStockoutOrderHandler.NewFilter_GetDeliveryOrder(), pOrder={0}", pOrder);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// return the sub-delivery order of pOrder, or null if failed.
+        /// </summary>
+        /// <param name="pOrder">object of sub-stockout order.</param>
+        /// <returns></returns>
+        public IMangoOrderBase GetSubDeliveryOrder(MangoSubStockoutOrder pOrder)
+        {
+            if (null == pOrder)
+            {
+                C_WMS.Data.Utility.MyLog.Instance.Warning("MangoSubStockoutOrderHandler.GetSubDeliveryOrder(), invalid null param.");
+                return null;
+            }
+            try
+            {
+                string errMsg = string.Empty;
+                MangoSubDeliveryOrder retOrder = null;
+                List<MangoSubDeliveryOrder> sdList = null;
+                int err = MangoFactory.GetV_Order(NewFilter_GetDeliveryOrder(pOrder), out sdList, out errMsg);
+                if (1 == err)
+                {
+                    retOrder = sdList[0];
+                }
+                else
+                {
+                    C_WMS.Data.Utility.MyLog.Instance.Warning("MangoSubStockoutOrderHandler.GetSubDeliveryOrder({0}), failed in retrieving sub-delivery order. err={1}, errMsg={2}", pOrder, err, errMsg);
+                }
+                if (null != sdList) sdList.Clear();
+                return retOrder;
+            }
+            catch (Exception ex)
+            {
+                C_WMS.Data.Utility.MyLog.Instance.Warning(ex, "Exception in MangoSubStockoutOrderHandler.GetSubDeliveryOrder({0})", pOrder);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 获取与子出库单pOrder关联的商城子订单，如果执行失败则返回null.
+        /// </summary>
+        /// <param name="pOrder">子出库单对象</param>
+        public IMangoOrderBase GetSubMallOrder(MangoSubStockoutOrder pOrder)
+        {
+            if (null == pOrder)
+            {
+                C_WMS.Data.Utility.MyLog.Instance.Warning("MangoSubStockoutOrderHandler.GetSubMallOrder(), invalid null param.");
+                return null;
+            }
+
+            try
+            {
+                var delivery = GetSubDeliveryOrder(pOrder);
+                if (null == delivery as MangoSubDeliveryOrder)
+                {
+                    C_WMS.Data.Utility.MyLog.Instance.Warning("MangoSubStockoutOrderHandler.GetSubMallOrder({0}), COULDNOT retrieve sub-delivery order.", pOrder);
+                    return null;
+                }
+                else
+                {
+                    var misEntity = MangoFactory.NewOrder<Product_User_DingDan_ProductList>((delivery as MangoSubDeliveryOrder).ZiDingDanID.ToString());
+                    return (null == misEntity) ? null : new MangoSubMallOrder(misEntity);
+                }
+            }
+            catch (Exception ex)
+            {
+                C_WMS.Data.Utility.MyLog.Instance.Warning(ex, "Exception in MangoSubStockoutOrderHandler.GetSubMallOrder({0})", pOrder);
+                return null;
+            }
+        }
+        
+        /// <summary>
+        /// 获取与pOrder关联的商城主订单Id
+        /// </summary>
+        public IMangoOrderBase GetMallOrder(MangoSubStockoutOrder pOrder)
+        {
+            if (null == pOrder)
+            {
+                C_WMS.Data.Utility.MyLog.Instance.Warning("MangoSubStockoutOrderHandler.GetMallOrder(), invalid null param.");
+                return null;
+            }
+
+            try
+            {
+                var subOrder = GetSubMallOrder(pOrder);
+                if (null == subOrder as MangoSubMallOrder)
+                {
+                    C_WMS.Data.Utility.MyLog.Instance.Warning("MangoSubStockoutOrderHandler.GetMallOrder({0}), COULDNOT retrieve sub-delivery order.", pOrder);
+                    return null;
+                }
+                else
+                {
+                    var misEntity = MangoFactory.NewOrder<Product_User_DingDan>((subOrder as MangoSubMallOrder).DingDanID.ToString());
+                    return (null == misEntity) ? null : new MangoMallOrder(misEntity);
+                }
+            }
+            catch (Exception ex)
+            {
+                C_WMS.Data.Utility.MyLog.Instance.Warning(ex, "Exception in MangoSubStockoutOrderHandler.GetMallOrder({0})", pOrder);
+                return null;
+            }
+        }
+        
+        /// <summary>
+        /// 要求出库时间
+        /// </summary>
+        public string GetScheduleDate(MangoSubStockoutOrder pOrder)
+        {
+            var subMallOrder = GetSubMallOrder(pOrder) as MangoSubMallOrder;
+            return (null != subMallOrder) ? subMallOrder.PeiSongTime.ToString() : DateTime.MaxValue.ToString();
+        }
+
+        /// <summary>
+        /// 应收商品数量
+        /// </summary>
+        public decimal GetPlanQuantity(MangoSubStockoutOrder pOrder)
+        {
+            var subMallOrder = GetSubMallOrder(pOrder) as MangoSubMallOrder;
+            return (null != subMallOrder) ? subMallOrder.ProductCount.Decimal() : 0M;
         }
     }
 }

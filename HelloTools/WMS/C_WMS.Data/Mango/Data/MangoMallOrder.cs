@@ -9,7 +9,7 @@ namespace C_WMS.Data.Mango.Data
     /// <summary>
     /// 芒果商城的商城订单类
     /// </summary>
-    class MangoMallOrder: Product_User_DingDan
+    class MangoMallOrder : Product_User_DingDan, IMangoOrderBase
     {
         /// <summary>
         /// default constructor
@@ -17,12 +17,21 @@ namespace C_WMS.Data.Mango.Data
         public MangoMallOrder() { }
 
         /// <summary>
+        /// construct by id
+        /// </summary>
+        /// <param name="id"></param>
+        public MangoMallOrder(string id)
+        {
+            Copy(MangoFactory.NewOrder<Product_User_DingDan>(id));
+        }
+
+        /// <summary>
         /// 根据pSrcObj创建实体
         /// </summary>
         /// <param name="pSrcObj">源实体</param>
         public MangoMallOrder(Product_User_DingDan pSrcObj)
         {
-            CopyFrom(pSrcObj);
+            Copy(pSrcObj);
         }
 
         /// <summary>
@@ -30,10 +39,14 @@ namespace C_WMS.Data.Mango.Data
         /// </summary>
         /// <param name="pSrc">源实体</param>
         /// <returns>若成功则返回string.Empty；否则返回错误描述</returns>
-        public string CopyFrom(Product_User_DingDan pSrc)
+        public string Copy(Product_User_DingDan pSrc)
         {
             if (null == pSrc)
-                return "非法入参，pSrcObj为null";
+            {
+                string errMsg = string.Format("MangoMallOrder.Copy(), invalid null input param.");
+                C_WMS.Data.Utility.MyLog.Instance.Warning(errMsg);
+                return errMsg;
+            }
             UpdateTime = pSrc.UpdateTime;
             MapClassId = pSrc.MapClassId;
             MapId = pSrc.MapId;
@@ -67,6 +80,21 @@ namespace C_WMS.Data.Mango.Data
             AddTime = pSrc.AddTime;
             QueRenTime = pSrc.QueRenTime;
             return string.Empty;
+        }
+
+        /// <summary>
+        /// IMangoOrderBase.GetId(), return id of order
+        /// </summary>
+        /// <returns></returns>
+        public string GetId() { return DingDanID.ToString(); }
+
+        /// <summary>
+        /// overrided ToString()
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("{0}[{1}]", GetType(), DingDanID);
         }
     }
 }

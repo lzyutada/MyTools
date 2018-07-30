@@ -5,39 +5,21 @@ namespace C_WMS.Data.Mango.Data
     /// <summary>
     /// 芒果商城中的退货子订单
     /// </summary>
-    public class MangoSubReturnOrder : Product_TuiHuo
+    public class MangoSubReturnOrder : Product_TuiHuo, IMangoOrderBase
     {
-        #region
-        ///// <summary>
-        ///// 原交易平台订单，即芒果商城主订单
-        ///// </summary>
-        //protected MangoExwarehouseOrder order = null;
-
-        ///// <summary>
-        ///// 获取原交易平台订单
-        ///// </summary>
-        //public MangoExwarehouseOrder Order { get { return order; } }
-
-        ///// <summary>
-        ///// 交易平台子订单，即芒果商城子订单
-        ///// </summary>
-        //protected MangoSubExwarehouseOrder subOrder = null;
-
-        ///// <summary>
-        ///// 获取交易平台子订单
-        ///// </summary>
-        //public MangoSubExwarehouseOrder SubOrder { get { return subOrder; } }
-
-        ///// <summary>
-        ///// 应收商品数量
-        ///// </summary>
-        //public int planQty = 0;
-        #endregion
-
         /// <summary>
         /// default constructor
         /// </summary>
         public MangoSubReturnOrder() { }
+
+        /// <summary>
+        /// construct by id
+        /// </summary>
+        /// <param name="id"></param>
+        public MangoSubReturnOrder(string id)
+        {
+            Copy(MangoFactory.NewOrder<Product_TuiHuo>(id));
+        }
 
         /// <summary>
         /// 通过Product_TuiHuo实例拷贝创建MangoSubExwarehouseOrder实例
@@ -46,7 +28,7 @@ namespace C_WMS.Data.Mango.Data
         /// <returns>若成功则返回string.Empty; 否则返回错误描述</returns>
         public MangoSubReturnOrder(Product_TuiHuo srcObj)
         {
-            CopyFrom(srcObj);
+            Copy(srcObj);
         }
 
         /// <summary>
@@ -54,7 +36,7 @@ namespace C_WMS.Data.Mango.Data
         /// </summary>
         /// <param name="srcObj">源实例</param>
         /// <returns>若成功则返回string.Empty; 否则返回错误描述</returns>
-        public string CopyFrom(Product_TuiHuo srcObj)
+        public string Copy(Product_TuiHuo srcObj)
         {
             if (null != srcObj)
             {
@@ -81,8 +63,25 @@ namespace C_WMS.Data.Mango.Data
             }
             else
             {
-                return "源实例srcObj为null。";
+                string errMsg = string.Format("MangoSubReturnOrder.Copy(), invalid null input param.");
+                C_WMS.Data.Utility.MyLog.Instance.Warning(errMsg);
+                return errMsg;
             }
+        }
+
+        /// <summary>
+        /// IMangoOrderBase.GetId(), return id of order
+        /// </summary>
+        /// <returns></returns>
+        public string GetId() { return ZiTuihuoID.ToString(); }
+
+        /// <summary>
+        /// overrided ToString()
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("{0}[{1}]", GetType(), ZiTuihuoID);
         }
     }
 }

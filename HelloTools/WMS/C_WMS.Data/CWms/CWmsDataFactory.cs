@@ -78,7 +78,7 @@ namespace C_WMS.Data.CWms
             return err;
         }
 
-        static public List<string> GetV_ProductIds(List<string> pIdList)
+        static public IEnumerable<string> GetV_ProductIds(List<string> pIdList)
         {
             throw new NotImplementedException();
         }

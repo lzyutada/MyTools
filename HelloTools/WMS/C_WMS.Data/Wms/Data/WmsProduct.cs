@@ -25,7 +25,7 @@ namespace C_WMS.Data.Wms.Data
         /// <summary>
         /// 商品条码
         /// </summary>
-        public string barCode;
+        public string barCode = string.Empty;
 
         /// <summary>
         /// 商品类型
