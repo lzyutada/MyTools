@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{10C05019-2376-4E11-917E-9421D8AD9D9B}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>MangoPublishPackage</RootNamespace>
+    <AssemblyName>MangoPublishPackage</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.TeamFoundation.Build.Client">
+      <HintPath>..\packages\TfsTestAPI\net46\Microsoft.TeamFoundation.Build.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.Client">
+      <HintPath>..\packages\TfsTestAPI\net46\Microsoft.TeamFoundation.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.Common">
+      <HintPath>..\packages\TfsTestAPI\net46\Microsoft.TeamFoundation.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.Diff">
+      <HintPath>..\packages\TfsTestAPI\net46\Microsoft.TeamFoundation.Diff.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.TestManagement.Client, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TfsTestAPI\net46\Microsoft.TeamFoundation.VersionControl.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.WorkItemTracking.Client">
+      <HintPath>..\packages\TfsTestAPI\net46\Microsoft.TeamFoundation.WorkItemTracking.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.WorkItemTracking.Client.QueryLanguage">
+      <HintPath>..\packages\TfsTestAPI\net46\Microsoft.TeamFoundation.WorkItemTracking.Client.QueryLanguage.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Services.Common">
+      <HintPath>..\packages\TfsTestAPI\net46\Microsoft.VisualStudio.Services.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BuildingControl\ControlBuilding.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BuildingControl\ControlBuilding.Designer.cs">
+      <DependentUpon>ControlBuilding.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Configs\MyConfig.cs" />
+    <Compile Include="FileControl\ControlFileDetail.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FileControl\ControlFileDetail.Designer.cs">
+      <DependentUpon>ControlFileDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCompareFile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCompareFile.Designer.cs">
+      <DependentUpon>FormCompareFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormTfsManage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTfsManage.Designer.cs">
+      <DependentUpon>FormTfsManage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCheckProject.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCheckProject.Designer.cs">
+      <DependentUpon>FormCheckProject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormBuildAndPublish.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormBuildAndPublish.Designer.cs">
+      <DependentUpon>FormBuildAndPublish.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormCheckFileOccupy.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormCheckFileOccupy.Designer.cs">
+      <DependentUpon>FormCheckFileOccupy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormWebPubPackage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormWebPubPackage.Designer.cs">
+      <DependentUpon>FormWebPubPackage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormWorkFlowBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormWorkFlowBase.Designer.cs">
+      <DependentUpon>FormWorkFlowBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Utility.cs" />
+    <Compile Include="WorkFlow\DTO.cs" />
+    <Compile Include="WorkFlow\ITaskItem.cs" />
+    <Compile Include="WorkFlow\WorkFlowControler.cs" />
+    <EmbeddedResource Include="BuildingControl\ControlBuilding.resx">
+      <DependentUpon>ControlBuilding.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileControl\ControlFileDetail.resx">
+      <DependentUpon>ControlFileDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCompareFile.resx">
+      <DependentUpon>FormCompareFile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTfsManage.resx">
+      <DependentUpon>FormTfsManage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCheckProject.resx">
+      <DependentUpon>FormCheckProject.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormBuildAndPublish.resx">
+      <DependentUpon>FormBuildAndPublish.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormCheckFileOccupy.resx">
+      <DependentUpon>FormCheckFileOccupy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormWebPubPackage.resx">
+      <DependentUpon>FormWebPubPackage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormWorkFlowBase.resx">
+      <DependentUpon>FormWorkFlowBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Configs\settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
